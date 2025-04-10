@@ -1,0 +1,998 @@
+<html lang="es" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dependencias</title>
+  
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+    
+    
+    <!-- Bootstrap Select -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
+    
+    <!-- Custom styles -->
+    <link href="dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    
+ 
+  </head>
+
+<body>
+  <!--HEADER DE TODA LA PAGINA-->
+  <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <img src="imagenes/logo.png" alt="Descripción de la imagen" width="180" height="30">
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#sidebarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <h4 style="color: rgb(173, 177, 180);">Consejería Jurídica del Poder Ejecutivo del Estado de Guerrero</h4>
+    <div class="navbar-nav">
+      <div class="nav-item text-nowrap">
+        <a class="nav-link px-3" href="#">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <!--TODAS LAS PAGINAS-->
+  <div class="container-fluid">
+    <div class="row">
+      <!--CUADRO DE NAVEGACION DE LA IZQUIERDA-->
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#" data-target="cuadro">
+                <span data-feather="file"></span>
+                Cuadro General
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-target="series">
+                <span data-feather="home"></span>
+                Series Documentales
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-target="cadido">
+                <span data-feather="file"></span>
+                Catálogo de Disposición Documental CADIDO
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-target="inventario">
+                <span data-feather="file"></span>
+                Inventario Documental
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-target="prueba">
+                <span data-feather="file"></span>
+                prueba
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Páginas -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!--Pagina de CUADRO GENERAL SECCIONES-->
+        <div id="cuadro" class="page">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Cuadro General de Clasificación Archivistica</h1>
+            <!--Botones de exportar y calendario-->
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportarExcel()">Exportar a
+                  Excel</button>
+              </div>
+              <div>
+                <div style="position: relative;"> <!-- Calendario -->
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                    <span data-feather="calendar"></span>
+                    <span id="fechaDisplay">Mostrar Fecha</span>
+                  </button>
+                  <input type="text" id="fechaInput"
+                    style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"
+              onclick="limpiarFormulario()">
+              Registrar nuevo
+            </button>
+          </div>
+          <hr>
+          <div><!--Tabla de secciones-->
+            <div>
+              <div id="datos"></div>
+            </div>
+          </div>
+        </div><!--TERMINA PAGINA DE CUADRO GENERAL SECCIONES-->
+
+        <!--Pagina de Series-->
+        <div id="series" class="page" style="display:none;">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Series Documentales</h1>
+            <!--Botones de exportar y calendario-->
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportarSeriesExcel()">Exportar
+                  a
+                  Excel</button>
+              </div>
+              <div>
+                <div style="position: relative;"> <!-- Contenedor posicionado -->
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                    <span data-feather="calendar"></span>
+                    <span id="fechaDisplay">Mostrar Fecha</span>
+                  </button>
+                  <input type="text" id="fechaInput"
+                    style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="container">
+              <div class="row">
+                <!-- Contenedor de 1/3 de ancho -->
+                <div class="col-4">
+
+                  <!-- Input 1 -->
+                  <div class="mb-3">
+                    <!-- Label para el dropdown -->
+                    <label for="selectSecciones" class="form-label">Selecciona una opción:</label>
+                    <select class="form-select" id="selectSecciones">
+                      <option selected disabled>-- Cargando opciones --</option>
+                    </select>
+                  </div>
+
+                  <!-- Input 2 -->
+                  <div class="mb-3">
+                    <!-- Botón para abrir el modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeries"
+                      onclick="habilitarBotonGuardar()">
+                      Nueva Serie
+                    </button>
+                  </div>
+
+                </div>
+                <!-- Contenedor de 2/3 de ancho -->
+                <div class="col-8">
+                  <div class="mb-3">
+                    <label for="seccionObtenida" class="form-label">Sección:</label>
+                    <input type="text" class="form-control" id="seccionObtenida" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div>
+            <div class="container mt-3">
+              <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                  <thead class="table-dark">
+                    <tr>
+                      <th style="width: 10%">ID</th>
+                      <th style="width: 60%">Nombre</th>
+                      <th style="width: 10%">Código Sección</th>
+                      <th style="width: 10%;">Editar</th>
+                      <th style="width: 10%;">Eliminar</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabla-series"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div><!-- TERMINA EL DIV DE SERIES-->
+
+        <!--Pagina de CADIDO-->
+        <div id="cadido" class="page" style="display:none;">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Catálgo de Disposición Documental CADIDO</h1>
+            <!--Botones de exportar y calendario-->
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportarCADIDOExcel()">Exportar
+                  a
+                  Excel</button>
+              </div>
+              <div>
+                <div style="position: relative;"> <!-- Contenedor posicionado -->
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                    <span data-feather="calendar"></span>
+                    <span id="fechaDisplay">Mostrar Fecha</span>
+                  </button>
+                  <input type="text" id="fechaInput"
+                    style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="container">
+              <div class="row">
+                <!-- Contenedor de 1/3 de ancho -->
+                <div class="col-4">
+
+                  <!-- Input 1 -->
+                  <div class="mb-3">
+                    <!-- Label para el dropdown -->
+                    <label for="selectSeccionesCADIDO" class="form-label">Selecciona una opción:</label>
+                    <select class="form-select" id="selectSeccionesCADIDO">
+                      <option selected disabled>-- Cargando opciones --</option>
+                    </select>
+                  </div>
+
+                  <!-- Input 2 -->
+                  <div class="mb-3">
+
+                  </div>
+
+                </div>
+                <!-- Contenedor de 2/3 de ancho -->
+                <div class="col-8">
+                  <div class="mb-3">
+                    <label for="seccionObtenidaCADIDO" class="form-label">Sección:</label>
+                    <input type="text" class="form-control" id="seccionObtenidaCADIDO" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div>
+            <div class="container mt-3">
+              <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                  <thead class="table-dark">
+                    <tr>
+                      <th style="width: 10%">ID</th>
+                      <th style="width: 60%">Nombre</th>
+                      <th style="width: 10%">Código Sección</th>
+                      <th style="width: 10%;">Editar</th>
+
+                    </tr>
+                  </thead>
+                  <tbody id="tabla-seriesCADIDO"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div><!-- TERMINA EL DIV DE SERIES-->
+
+        <!--Pagina de INVENTARIO-->
+        <div id="inventario" class="page" style="display:none;">
+
+          <!--CONTENEDOR DE PESTAÑAS-->
+          <div class="container mt-4">
+            <!-- Navegación de pestañas -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button"
+                  role="tab">Inventario</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button"
+                  role="tab">Turnados</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button"
+                  role="tab">Dependencias</button>
+              </li>
+            </ul>
+            <!-- Contenido de las pestañas -->
+            <div class="tab-content mt-3" id="myTabContent">
+              <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                <!--AQUI COMIENZA EL INVENTARIO PRINCIPAL-->
+                <div
+                  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                  
+                  <!--Botones de exportar y calendario-->
+                  <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                      <button type="button" class="btn btn-sm btn-outline-secondary"
+                        onclick="exportarCADIDOExcel()">Exportar
+                        a
+                        Excel</button>
+                    </div>
+                    <div>
+                      <div style="position: relative;"> <!-- Contenedor posicionado -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                          <span data-feather="calendar"></span>
+                          <span id="fechaDisplay">Mostrar Fecha</span>
+                        </button>
+                        <input type="text" id="fechaInput"
+                          style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="container">
+                    <div class="row">
+                      <!-- Contenedor de 1/3 de ancho -->
+                      <div class="col-4">
+
+                        <!-- Input 1 -->
+                        <div class="mb-3">
+                          <!-- Label para el dropdown de las secciones -->
+                          <label for="selectSeccionesInventario" class="form-label">Selecciona una opción:</label>
+                          <select class="form-select" id="selectSeccionesInventario">
+                            <option selected disabled>-- Cargando opciones --</option>
+                          </select>
+                          <br>
+                          <!-- Label para el dropdown del año -->
+                          <label for="selectAnioBusqueda" class="form-label">Selecciona el año:</label>
+                          <select class="form-select" id="selectAnioBusqueda">
+                            <option selected disabled>-- Cargando opciones --</option>
+                          </select>
+                        </div>
+
+                        <!-- Botón de registrar Inventario -->
+                        <div class="mb-3">
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalInventario" onclick="limpiarModalInventario()">
+                            Registrar nuevo
+                          </button>
+                        </div>
+
+                      </div>
+                      <!-- Contenedor de 2/3 de ancho -->
+                      <div class="col-8">
+                        <div class="mb-3">
+                          <label for="seccionObtenidaInventario" class="form-label">Sección:</label>
+                          <input type="text" class="form-control" id="seccionObtenidaInventario" disabled>
+                        </div>
+                        <div class="mb-3">
+                          <!-- Label para el dropdown de Status-->
+                          <label for="selectStatusInventario" class="form-label">Status:</label>
+                          <select class="form-select" id="selectStatusInventario">
+                            <option selected>Todos</option>
+                            <option value="Recepcionado">Recepcionado</option>
+                            <option value="En Trámite">En Trámite</option>
+                            <option value="Concluido">Concluido</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div>
+                  <div class="container mt-3">
+                    <h1 class="h2">Inventario Documental</h1>
+                    <br>
+                    <!--Filtro de Status-->
+                    <input type="text" id="filtroAsunto" class="form-control mb-2" placeholder="Filtrar por Asunto">
+                    <div class="table-responsive">
+                      <table class="table table-hover table-bordered" id="tablaInventario">
+                        <thead class="table-dark">
+                          <tr>
+                            <th colspan="1">No Expediente</th>
+                            <th colspan="2">Asunto</th>
+                            <th colspan="1">Status</th>
+                            <th colspan="1">Editar</th>
+                            <th colspan="1">Eliminar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabla-inventario"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!--AQUI TERMINA EL INVENTARIO PRINCIPAL-->
+              </div>
+              <div class="tab-pane fade" id="tab2" role="tabpanel">
+                <h4>Documentos Turnados</h4>
+                <hr>
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered" id="tablaInventarioTurnado">
+                    <thead class="table-dark">
+                      <tr>
+                        <th colspan="1">Número Expediente</th>
+                        <th colspan="2">Asunto</th>
+                        <th colspan="1">Status</th>
+                        <th colspan="1">Editar</th>
+                        <th colspan="1">--</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabla-inventarioTurnado"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="tab3" role="tabpanel">
+                
+                <!--AQUI COMIENZA EL MODULO DE DEPENDENCIAS-->
+                <div
+                  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                  <h1 class="h2">Dependencias</h1>
+                  <!--Botones de exportar y calendario-->
+                  <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                      <button type="button" class="btn btn-sm btn-outline-secondary"
+                        onclick="exportarCADIDOExcel()">Exportar
+                        a
+                        Excel</button>
+                    </div>
+                    <div>
+                      <div style="position: relative;"> <!-- Contenedor posicionado -->
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                          <span data-feather="calendar"></span>
+                          <span id="fechaDisplay">Mostrar Fecha</span>
+                        </button>
+                        <input type="text" id="fechaInput"
+                          style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div>
+                  <div class="container mt-3">
+                    <!-- Botón de registrar Inventario -->
+                    <div class="mb-3">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#modalDependencias" onclick="limpiarModalDependencias()">
+                        Registrar nuevo
+                      </button>
+                    </div>
+                    <!--Filtro de Dependencias-->
+                    <input type="text" id="filtroDependencias" class="form-control mb-2" placeholder="Filtrar por nombre">
+                    <div class="table-responsive">
+                      <table class="table table-hover table-bordered" id="tablaDependencias">
+                        <thead class="table-dark">
+                          <tr>
+                            <!--<th colspan="1">Id</th>-->
+                            <th colspan="2">Dependencia</th>
+                            <th colspan="1">Editar</th>
+                            <th colspan="1">Eliminar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabla-dependencias"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!--AQUI TERMINA MODULO DE DEPENDENCIAS-->
+              </div>
+            </div>
+          </div>
+
+        </div><!-- TERMINA EL DIV DE INVENTARIO-->
+
+        <div id="prueba" class="page" style="display: none;">
+          <h1>Prueba</h1>
+
+          <nav>
+              <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
+                  <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
+                  <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+              </div>
+          </nav>
+      
+          <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                  <p>Contenido de Home</p>
+              </div>
+              <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                  <p>Contenido de Profile</p>
+              </div>
+              <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                  <p>Contenido de Contact</p>
+              </div>
+          </div>
+
+
+            
+        </div>
+
+        <!-- Repite para agregar mas paginas -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de Éxito -->
+  <div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="successModalLabel">¡Éxito!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Los datos se han guardado correctamente.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+
+        </div>
+      </div>
+    </div>
+  </div><!-- TERMINA EL MODAL DE EXITO-->
+
+  <!--Modal de registro CUADRO SECCIONES-->
+  <div class="modal fade" id="myModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Formulario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="id" class="form-label">Código</label>
+              <!--<input type="text" class="form-control" id="id">-->
+              <input type="text" id="id" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label for="seccion" class="form-label">Sección</label>
+              <input type="text" class="form-control" id="seccion">
+            </div>
+            <div class="mb-3">
+              <label for="funcion" class="form-label">Función</label>
+              <select class="form-control" id="funcion">
+                <option value="Sustantivas">Sustantivas</option>
+                <option value="Comunes">Comunes</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtn" onclick="guardarDatos()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- TERMINA EL MODAL DE REGISTRO-->
+
+  <!--Modal de registro SERIES-->
+  <div class="modal fade" id="modalSeries" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Registrar Nueva Serie</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formSerie">
+            <div class="row g-3">
+              <!-- Campos principales -->
+              <div class="col-md-4">
+                <label class="form-label">Código Serie</label>
+                <input type="text" class="form-control" id="codigoSerie" required>
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombreSerie" required>
+              </div>
+
+              <div class="col-md-12">
+                <label class="form-label">Código Sección</label>
+                <input type="text" class="form-control" id="codigoSeccion" value="" disabled>
+              </div>
+
+              <!-- Subseries -->
+              <div class="col-12 mt-4 border-top pt-3">
+                <h6>Subseries</h6>
+                <div id="subseriesContainer">
+                  <!-- Las subseries se agregarán aquí -->
+                </div>
+
+                <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="agregarSubserie()">
+                  <i class="bi bi-plus-circle"></i> Agregar Subserie
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            onclick="limpiarFormularioSeries()">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="guardarSerie()" id="guardarBtnSerie">Guardar</button>
+          <button type="button" class="btn btn-primary" onclick="modificarSerie()"
+            id="modificarBtnSerie">Modificar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modal CADIDO-->
+  <div class="modal fade" id="modalCADIDO" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">CADIDO</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formCADIDO">
+            <!-- Tarjeta para Datos de la Serie -->
+            <div class="card">
+              <div class="card-header">
+                <h5>Datos de la Serie</h5>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <!-- Código y Nombre en la misma fila -->
+                  <div class="col-md-4">
+                    <label for="codigoSerieCADIDO" class="form-label">Código Serie</label>
+                    <input type="text" class="form-control" id="codigoSerieCADIDO" required disabled>
+                  </div>
+                  <div class="col-md-8">
+                    <label for="nombreSerieCADIDO" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombreSerieCADIDO" required disabled>
+                  </div>
+                  <!-- Código Sección -->
+                  <div class="col-md-12">
+                    <label for="codigoSeccionCADIDO" class="form-label">Código Sección</label>
+                    <input type="text" class="form-control" id="codigoSeccionCADIDO" value="" disabled>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta para Subseries -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <h5>Subseries</h5>
+              </div>
+              <div class="card-body">
+                <!-- Contenedor de Subseries -->
+                <div id="subseriesContainerCADIDO" class="mb-3">
+                  <!-- Aquí se agregarán dinámicamente las subseries -->
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="modificarSerieCADIDO()"
+            id="modificarBtnSerie">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modal Inventario-->
+  <div class="modal fade" id="modalInventario" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRegistroInventario">Registrar Expediente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formularioInventario">
+          <!--id usado para editar-->
+          <input type="text" class="form-control" id="idInventario" hidden>
+          <input type="text" class="form-control" id="areaCreadoModalInventario" hidden>
+          
+            <!-- Número de Expediente (Generado Automáticamente) -->
+            <div class="mb-3">
+              <label for="numeroExpedienteModalInventario" class="form-label">Número de Expediente</label>
+              <input type="text" class="form-control" id="numeroExpedienteModalInventario">
+            </div>
+
+            <!-- Asunto -->
+            <div class="mb-3">
+              <label for="asuntoModalInventario" class="form-label">Asunto</label>
+              <input type="text" class="form-control" id="asuntoModalInventario" required>
+            </div>
+            <!--Dependencias-->
+            <div class="mb-3">
+              <label for="dependenciaModalInventario" class="form-label">Dependencia</label>
+              <select class="selectpicker form-control" id="dependenciaModalInventario" title="Seleccione una opción" data-live-search="true">
+          
+              </select>
+              <button type="button" class="btn btn-primary mt-2" id="btnAgregarDependencias">
+                <i class="bi bi-plus-circle"></i> Agregar
+              </button>
+              <h5 class="mt-3">Áreas Seleccionadas:</h5>
+              <ul id="listaDependencias"></ul>
+            </div>
+
+            <!--Dependencia
+            <label for="dependenciaModalInventario" class="form-label">Dependencia</label>
+            <select class="form-select" id="dependenciaModalInventario">
+            </select>-->
+            
+            <!-- Dependencia -->
+            
+
+            <!-- Tipo -->
+            <div class="mb-3">
+
+            </div>
+            <hr>
+            <!--AQUI VAMOS A AGREGAR LOS ESTATUS-->
+            <div class="mb-3">
+              <h5>Registro</h5>
+              <div class="mb-3">
+                <!--Tipo de registro-->
+                <label for="tipoModalInventario" class="form-label">Tipo</label>
+                <select class="form-select" id="tipoModalInventario" required>
+                  <option value="Recibido">No aplica</option>
+                  <option value="Enviado">Enviado</option>
+                  <option value="Recibido">Recibido</option>
+                </select>
+                <!--Fecha de registro-->
+                <label for="statusCreadoFechaModalInventario" class="form-label">Fecha de registro</label>
+                <input type="date" class="form-control" id="statusCreadoFechaModalInventario">
+                <!--Hora Creada-->
+                <label for="statusCreadoHoraModalInventario" class="form-label">Hora de registro</label>
+                <input type="time" class="form-control" id="statusCreadoHoraModalInventario">
+                <!--Area a la que se turna-->
+                <label for="statusCreadoAreaCreadoModalInventario" class="form-label">Área a la que se Turna</label>
+                <select class="form-select" id="statusCreadoAreaCreadoModalInventario">
+                </select>
+                <button type="button" class="btn btn-primary mt-2" id="btnAgregarAreaInventario">
+                  <i class="bi bi-plus-circle"></i> Agregar
+                </button>
+                <h5 class="mt-3">Áreas Seleccionadas:</h5>
+                <ul id="listaAreasTurnadas"></ul>
+              </div> <!-- Se cierra correctamente el div interno -->
+              <br>
+              <!--Observaciones de registro-->
+              <label for="statusCreadoObservacionesModalInventario" class="form-label">Observaciones</label>
+              <input type="text" class="form-control" id="statusCreadoObservacionesModalInventario">
+            </div>
+            <hr>
+            <!--Status en trámite-->
+            <div class="mb-3">
+              <h5>En trámite</h5>
+              <!--Fecha Tramite-->
+              <label for="statusTramiteFechaModalInventario" class="form-label">Fecha de trámite</label>
+              <input type="date" class="form-control" id="statusTramiteFechaModalInventario">
+              <!--Hora Tramite-->              
+              <label for="statusTramiteHoraModalInventario" class="form-label">Hora de registro</label>
+              <input type="time" class="form-control" id="statusTramiteHoraModalInventario">
+              <!--Observaciones tramite-->
+              <label for="statusTramiteObservacionesModalInventario" class="form-label">Observaciones de documento
+                trámite</label>
+              <input type="text" class="form-control" id="statusTramiteObservacionesModalInventario">
+            </div>
+            <hr>
+            <!--Status en concluido-->
+            <div class="mb-3">
+              <h5>Concluido</h5>
+              <!--Fecha Concluido-->
+              <label for="statusConcluidoFechaModalInventario" class="form-label">Fecha de Concluido</label>
+              <input type="date" class="form-control" id="statusConcluidoFechaModalInventario">
+              <!--Hora Concluido-->              
+              <label for="statusConcluidoHoraModalInventario" class="form-label">Hora de registro</label>
+              <input type="time" class="form-control" id="statusConcluidoHoraModalInventario">
+              <!--Observaciones Concluido-->
+              <label for="statusConcluidoObservacionesModalInventario" class="form-label">Observaciones de documento
+                concluido</label>
+              <input type="text" class="form-control" id="statusConcluidoObservacionesModalInventario">
+            </div>
+            <hr>
+            <!-- Número de Fojas -->
+            <div class="mb-3">
+              <label for="numeroFojasModalInventario" class="form-label">Número de Fojas</label>
+              <input type="number" class="form-control" id="numeroFojasModalInventario" required>
+            </div>
+            <!-- Soporte Documental -->
+            <div class="mb-3">
+              <label class="form-label">Soporte documental</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="soportePapelModalInventario" value="Papel">
+                <label class="form-check-label" for="soportePapelModalInventario">Papel</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="soporteElectronicoModalInventario"
+                  value="Electrónico">
+                <label class="form-check-label" for="soporteElectronicoModalInventario">Electrónico</label>
+              </div>
+            </div>
+            <!-- Condiciones de Acceso -->
+            <div class="mb-3">
+              <label class="form-label">Condiciones de acceso</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="condicionesAcceso"
+                  id="condicionPublicaModalInventario" value="Pública" onclick="toggleAniosReserva()">
+                <label class="form-check-label" for="condicionPublicaModalInventario">Pública</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="condicionesAcceso"
+                  id="condicionReservadaModalInventario" value="Reservada" onclick="toggleAniosReserva()">
+                <label class="form-check-label" for="condicionReservadaModalInventario">Reservada</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="condicionesAcceso"
+                  id="condicionConfidencialModalInventario" value="Confidencial" onclick="toggleAniosReserva()">
+                <label class="form-check-label" for="condicionConfidencialModalInventario">Confidencial</label>
+              </div>
+
+              <!-- Campo Años Reserva (Oculto por defecto) -->
+              <div class="mt-2" id="campoAniosReservaModalInventario">
+                <label class="form-label" for="aniosReservaModalInventario">Años de Reserva:</label>
+                <input type="number" class="form-control" id="aniosReservaModalInventario" min="0" value="0"
+                  style="display: none;">
+              </div>
+            </div>
+            <!-- Tradición Documental -->
+            <div class="mb-3">
+              <label class="form-label">Tradición documental</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="soporteOriginalModalInventario" value="Original">
+                <label class="form-check-label" for="soporteOriginalModalInventario">Original</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="soporteCopiaModalInventario" value="Copia">
+                <label class="form-check-label" for="soporteCopiaModalInventario">Copia</label>
+              </div>
+            </div>
+            <!-- Fechas de Apertura y Cierre -->
+            <!--
+            <div class="row">
+              <div class="col-md-6">
+                <label for="fechaApertura" class="form-label">Fecha de Apertura</label>
+                <input type="date" class="form-control" id="fechaApertura" required>
+              </div>
+              <div class="col-md-6">
+                <label for="fechaCierre" class="form-label">Fecha de Cierre</label>
+                <input type="date" class="form-control" id="fechaCierre">
+              </div>
+            </div>
+            -->
+
+
+            <!-- Inmueble -->
+            <div class="mb-3">
+              <label for="inmuebleModalInventario" class="form-label">Inmueble</label>
+              <input type="text" class="form-control" id="inmuebleModalInventario" required>
+            </div>
+            <!-- Ubicación -->
+            <div class="mb-3">
+              <label for="ubicacionModalInventario" class="form-label">Ubicación</label>
+              <input type="url" class="form-control" id="ubicacionModalInventario" required>
+            </div>
+
+            <!--Dropdown de las series-->
+            <div class="mb-3">
+
+              <label for="selectSeriesSubseries">Selecciona una subserie:</label>
+              <select class="form-select" id="selectSeriesSubseries">
+                <option selected disabled>-- Cargando opciones --</option>
+              </select>
+            </div>
+            <!-- Código de Serie -->
+            <div class="mb-3">
+              <label for="codigoSerieInventario" class="form-label">Código de Serie</label>
+              <input type="text" class="form-control" id="codigoSerieInventario" readonly>
+            </div>
+            <!--Nombre Serie-->
+            <div class="mb-3">
+              <label for="nombreSerieInventario" class="form-label">Nombre Serie</label>
+              <input type="text" class="form-control" id="nombreSerieInventario" required readonly>
+            </div>
+            <!--Valor documental-->
+            <div class="mb-3">
+              <label for="valorDocumentalSerieInventario" class="form-label">Valor Documental</label>
+              <input type="text" class="form-control" id="valorDocumentalSerieInventario" required readonly>
+            </div>
+            <!-- Años de Trámite y Concentración -->
+            <div class="row">
+              <div class="col-md-6">
+                <label for="aniosTramite" class="form-label">Años de Trámite</label>
+                <input type="number" class="form-control" id="aniosTramite" readonly>
+              </div>
+              <div class="col-md-6">
+                <label for="aniosConcentracion" class="form-label">Años de Concentración</label>
+                <input type="number" class="form-control" id="aniosConcentracion" readonly>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Botones del Modal -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="modificarBtnModalInventario" onclick="modificarInventario()">Modificar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtnModalinventario" onclick="guardarInventario()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modal Dependencias-->
+  <div class="modal fade" id="modalDependencias" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRegistroInventario">Registrar Dependencias</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formularioDependencias">
+          <!--id usado para editar-->
+          <input type="text" class="form-control" id="idDependencias" hidden>
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label for="nombreModalDependencias" class="form-label">Nombre de la dependencia</label>
+              <input type="text" class="form-control" id="nombreModalDependencias" required>
+            </div>
+            
+          </form>
+        </div>
+
+        <!-- Botones del Modal -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="modificarBtnModalDependencias" onclick="modificarDependencias()">Modificar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtnModalDependencias" onclick="guardarDependencias()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!--Script de secciones-->
+  <script src="scripts/seccionesScripts.js"></script>
+  <!--Script de series-->
+  <script src="scripts/seriesScripts.js"></script>
+  <script src="scripts/cadido.js"></script>
+  <!--Script de inventario-->
+  <script src="scripts/inventarioScripts.js"></script>
+  
+  <!--Script de dependencias-->
+  <script src="scripts/dependenciasScript.js"></script>
+  <!--Scrip de navegacion-->
+  <script src="scripts/navegacion.js"></script>
+  <!--Script del calendario-->
+  <script src="scripts/calendario.js"></script>
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+  <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+    integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+    crossorigin="anonymous"></script>
+  -->
+
+  <!--<script src="dashboard.js"></script>-->
+  <!-- Al final del <body>, después de Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
