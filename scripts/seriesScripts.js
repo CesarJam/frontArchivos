@@ -61,7 +61,7 @@ async function cargarSeries() {
         ordenarSubseriesPorId(series);
 
         // Llenar la tabla con las series
-        llenarTabla(series);
+        cargarTablaSeries(series);
     } catch (error) {
         //console.error('Error al cargar series:', error);
 
@@ -75,95 +75,120 @@ async function cargarSeries() {
     }
 }
 
-// Llenar tabla con datos
-function llenarTabla(series) {
+// Llenar tabla con datos SERIES
+function cargarTablaSeries(series) {
     const tbody = document.getElementById('tabla-series');
-    tbody.innerHTML = ''; // Limpiar tabla anterior
+    tbody.innerHTML = ''; 
 
-    // Asegurarse de que series sea un array, incluso si es null o undefined
     series = Array.isArray(series) ? series : [];
 
-    series.forEach(serie => {
-        // Fila principal
-        const filaPrincipal = document.createElement('tr');
-        filaPrincipal.className = 'fila-principal';
-        filaPrincipal.innerHTML = `
-            <td>
-                <span class="toggle-icon">▶</span>
-                ${serie.id}
-            </td>
-            <td>${serie.nombre}</td>
-            <td>${serie.codigoSeccion}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="editarSeries('${serie.id}')"><i class="bi bi-pencil"></i></button>
-            </td>     
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="eliminarDatos('${serie.id}')"><i class="bi bi-trash"></i></button>
-            </td>
-        `;
+    if (series.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay series para mostrar.</td></tr>';
+        return;
+    }
 
-        // Fila de subseries
-        const filaSubseries = document.createElement('tr');
-        filaSubseries.className = 'subseries collapse';
-        filaSubseries.innerHTML = `
-            <td colspan="3">
-                <div class="subseries-content">
-                    <table class="table table-sm mb-0">
+    const fragmento = document.createDocumentFragment();
+
+    series.forEach(serie => {
+        // 1. Llama a las funciones "constructoras"
+        const filaPrincipal = crearFilaPrincipalSeries(serie);
+        const filaDetalle = crearFilaDetalleSeries(serie);
+
+        // 2. Conecta la lógica de despliegue entre ambas filas
+        const icono = filaPrincipal.querySelector('.toggle-icon');
+        filaDetalle.addEventListener('show.bs.collapse', () => icono.classList.add('rotado'));
+        filaDetalle.addEventListener('hide.bs.collapse', () => icono.classList.remove('rotado'));
+        
+        // 3. Añade las filas al fragmento
+        fragmento.appendChild(filaPrincipal);
+        fragmento.appendChild(filaDetalle);
+    });
+
+    // 4. Actualiza el DOM una sola vez al final
+    tbody.appendChild(fragmento);
+}
+
+function crearFilaPrincipalSeries(serie) {
+    const fila = document.createElement('tr');
+    //fila.className = 'fila-principal-series';
+    // Añade la clase común '.fila-principal'
+    fila.className = 'fila-principal-series fila-principal';
+    
+    const idFilaDetalle = `subseries-for-${serie.id}`;
+    
+    fila.innerHTML = `
+        <td data-label="Id" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            <span class="toggle-icon">▶</span>
+            ${serie.id}
+        </td>
+        <td data-label="Nombre" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            ${serie.nombre}
+        </td>
+        <td data-label="Código" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            ${serie.codigoSeccion}
+        </td>
+        <td data-label="Editar">
+            <button class="btn btn-warning btn-sm btn-editar-serie" data-serie-id="${serie.id}" title="Editar Serie">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </td>
+        <td data-label="Eliminar">
+            <button class="btn btn-danger btn-sm btn-eliminar-serie" data-serie-id="${serie.id}" title="Eliminar Serie">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+
+    // Asignamos los eventos a los botones de esta fila
+    fila.querySelector('.btn-editar-serie').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const serieId = e.currentTarget.dataset.serieId;
+        editarSeries(serieId); // Llama a tu función original
+    });
+
+    fila.querySelector('.btn-eliminar-serie').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const serieId = e.currentTarget.dataset.serieId;
+        eliminarDatos(serieId); // Llama a tu función original
+    });
+
+    return fila;
+}
+
+function crearFilaDetalleSeries(serie) {
+    const fila = document.createElement('tr');
+    fila.className = 'collapse subseries fila-detalle';
+    fila.id = `subseries-for-${serie.id}`;
+
+    const subseriesHtml = Array.isArray(serie.subseries) && serie.subseries.length > 0
+        ? serie.subseries.map(sub => `
+            <tr>
+                <td>${sub.id}</td>
+                <td>${sub.nombre}</td>
+            </tr>
+        `).join('')
+        : '<tr><td colspan="2" class="text-center">No hay subseries registradas.</td></tr>';
+
+    fila.innerHTML = `
+        <td colspan="5"> <div class="subseries-content">
+                <div class="p-3 border rounded"> 
+                    <h6>Subseries de "${serie.nombre}"</h6>
+                    <table class="table table-striped table-sm">
                         <tbody>
-                            ${serie.subseries.map(sub => `
-                                <tr>
-                                    <td style="width: 10%">${sub.id}</td>
-                                    <td style="width: 80%">${sub.nombre}</td>
-                                </tr>
-                            `).join('')}
+                            ${subseriesHtml}
                         </tbody>
                     </table>
                 </div>
-            </td>
-        `;
+            </div>
+        </td>
+    `;
 
-        // Evento para expandir/colapsar
-        filaPrincipal.addEventListener('click', () => {
-            const icono = filaPrincipal.querySelector('.toggle-icon');
-            icono.style.transform = icono.style.transform === 'rotate(90deg)'
-                ? 'rotate(0deg)'
-                : 'rotate(90deg)';
-
-            new bootstrap.Collapse(filaSubseries, { toggle: true });
-        });
-
-        tbody.appendChild(filaPrincipal);
-        tbody.appendChild(filaSubseries);
-    });
+    return fila;
 }
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', cargarSecciones);
 
-// Estilos
-const style = document.createElement('style');
-style.textContent = `
-    .fila-principal { 
-        cursor: pointer; 
-        background-color: #fff;
-    }
-    .fila-principal:hover {
-        background-color: #f8f9fa;
-    }
-    .toggle-icon {
-        transition: transform 0.3s ease;
-        display: inline-block;
-        margin-right: 8px;
-    }
-    .subseries td {
-        padding: 0 !important;
-        background-color: #e9ecef;
-    }
-    .subseries-content {
-        padding: 12px;
-    }
-`;
-document.head.appendChild(style);
 
 //Datos de las subseries que se manejan en el modal
 // Variables
@@ -230,7 +255,7 @@ async function cargarSeriesManual(codigoSeccion) {
         // Ordenar subseries dentro de cada serie
         ordenarSubseriesPorId(series);
 
-        llenarTabla(series);
+        cargarTablaSeries(series);
     } catch (error) {
         console.error('Error al recargar series:', error);
     }

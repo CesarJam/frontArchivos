@@ -32,79 +32,127 @@ async function cargarSeccionesCADIDO() {
 // Inicialización
 document.addEventListener('DOMContentLoaded', cargarSeccionesCADIDO);
 
-// Llenar tabla con datos
-function llenarTablaCADIDO(series) {
+// Llenar tabla con datos CADIDO
+function cargarTablaCADIDO(series) {
     const tbody = document.getElementById('tabla-seriesCADIDO');
-    tbody.innerHTML = ''; // Limpiar tabla anterior
+    tbody.innerHTML = ''; 
 
-    // Asegurarse de que series sea un array, incluso si es null o undefined
     series = Array.isArray(series) ? series : [];
 
+    if (series.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay registros para mostrar.</td></tr>';
+        return;
+    }
+
+    const fragmento = document.createDocumentFragment();
+
     series.forEach(serie => {
-        // Fila principal
-        const filaPrincipal = document.createElement('tr');
-        filaPrincipal.className = 'fila-principal';
-        filaPrincipal.innerHTML = `
-            <td>
-                <span class="toggle-icon">▶</span>
-                ${serie.id}
-            </td>
-            <td>${serie.nombre}</td>
-            <td>${serie.codigoSeccion}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="editarSeriesCADIDO('${serie.id}')"><i class="bi bi-pencil"></i></button>
-            </td>
-        `;
+        // 1. Llama a las funciones ayudantes para crear los elementos
+        const filaPrincipal = crearFilaPrincipalCADIDO(serie);
+        const filaDetalle = crearFilaDetalleCADIDO(serie);
 
-        // Fila de subseries
-        const filaSubseries = document.createElement('tr');
-        filaSubseries.className = 'subseries collapse';
-        filaSubseries.innerHTML = `
-            <td colspan="3">
-                <div class="subseries-content">
-                    <table class="table table-sm mb-0">
-                        <tbody>
-                              <tr class="fw-bold">
-                                <td>Código</td>
-                                <td>Nombre Subserie</td>
-                                <td>Valor Documental</td>
-                                <td>Años de trámite (AT)</td>
-                                <td>Años de concentración (AC)</td>
-                                <td>Técnica de selección</td>
-                                <td>Datos personales</td>
-                                <td>Observaciones</td>
-                              </tr>
-                            ${serie.subseries.map(sub => `
-                                <tr>
-                                    <td style="width: 10%">${sub.id} </td>
-                                    <td style="width: 20%">${sub.nombre} </td>
-                                    <td style="width: 15%">${sub.valoresDocumentales} </td>
-                                    <td style="width: 10%">${sub.aniosTramite} </td>
-                                    <td style="width: 15%">${sub.aniosConcentracion} </td>
-                                    <td style="width: 10%">${sub.tecnicaSeleccion} </td>
-                                    <td style="width: 10%">${sub.datosPersonales} </td>
-                                    <td style="width: 10%">${sub.observaciones} </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </td>
-        `;
-
-        // Evento para expandir/colapsar
-        filaPrincipal.addEventListener('click', () => {
-            const icono = filaPrincipal.querySelector('.toggle-icon');
-            icono.style.transform = icono.style.transform === 'rotate(90deg)'
-                ? 'rotate(0deg)'
-                : 'rotate(90deg)';
-
-            new bootstrap.Collapse(filaSubseries, { toggle: true });
-        });
-
-        tbody.appendChild(filaPrincipal);
-        tbody.appendChild(filaSubseries);
+        // 2. Conecta la lógica entre ambas filas (esto debe hacerse aquí)
+        const icono = filaPrincipal.querySelector('.toggle-icon');
+        filaDetalle.addEventListener('show.bs.collapse', () => icono.classList.add('rotado'));
+        filaDetalle.addEventListener('hide.bs.collapse', () => icono.classList.remove('rotado'));
+        
+        // 3. Añade las filas al fragmento
+        fragmento.appendChild(filaPrincipal);
+        fragmento.appendChild(filaDetalle);
     });
+
+    // 4. Añade todo el contenido al DOM de una sola vez para mejor rendimiento
+    tbody.appendChild(fragmento);
+}
+function crearFilaPrincipalCADIDO(serie) {
+    const fila = document.createElement('tr');
+    //fila.className = 'fila-principal-CADIDO';
+    fila.className = 'fila-principal-series fila-principal'; 
+    
+    // El ID de la fila de detalle se genera aquí para que el data-bs-target lo conozca
+    const idFilaDetalle = `subseries-cadido-for-${serie.id}`;
+    
+    fila.innerHTML = `
+        <td data-label="ID" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            <span class="toggle-icon">▶</span>
+            ${serie.id}
+        </td>
+        <td data-label="Nombre" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            ${serie.nombre}
+        </td>
+        <td data-label="Código Sección" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
+            ${serie.codigoSeccion}
+        </td>
+        <td data-label="Editar">
+            <button class="btn btn-warning btn-sm btn-editar-cadido" data-serie-id="${serie.id}" title="Editar Serie">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </td>
+    `;
+
+    // La lógica del botón de editar pertenece aquí, ya que solo afecta a esta fila
+    const btnEditar = fila.querySelector('.btn-editar-cadido');
+    btnEditar.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que el click colapse la fila
+        const serieId = e.currentTarget.dataset.serieId;
+        editarSeriesCADIDO(serieId); // Llama a tu función original para editar
+    });
+
+    return fila;
+}
+
+function crearFilaDetalleCADIDO(serie) {
+    const fila = document.createElement('tr');
+    fila.className = 'subseries collapse fila-detalle'; // Clases para el colapso de Bootstrap
+    fila.id = `subseries-cadido-for-${serie.id}`; // Se le asigna el ID correspondiente
+
+    // --- INICIO DE LA MODIFICACIÓN ---
+    // Añadimos data-label a cada <td> para que el CSS sepa qué etiqueta mostrar
+    const subseriesHtml = Array.isArray(serie.subseries) && serie.subseries.length > 0
+        ? serie.subseries.map(sub => `
+            <tr>
+                <td data-label="Código">${sub.id}</td>
+                <td data-label="Nombre Subserie">${sub.nombre}</td>
+                <td data-label="Valor Doc.">${sub.valoresDocumentales}</td>
+                <td data-label="AT">${sub.aniosTramite}</td>
+                <td data-label="AC">${sub.aniosConcentracion}</td>
+                <td data-label="Téc. Selección">${sub.tecnicaSeleccion}</td>
+                <td data-label="Datos Personales">${sub.datosPersonales}</td>
+                <td data-label="Observaciones">${sub.observaciones}</td>
+            </tr>
+        `).join('')
+        : '<tr><td colspan="8" class="text-center">No hay subseries registradas.</td></tr>';
+
+    fila.innerHTML = `
+        <td colspan="4"> 
+            <div class="subseries-content">
+                <div class="p-3 border rounded"> 
+                    <h6>Detalles de "${serie.nombre}"</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-nested-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre Subserie</th>
+                                    <th>Valor Doc.</th>
+                                    <th>AT</th>
+                                    <th>AC</th>
+                                    <th>Téc. Selección</th>
+                                    <th>Datos Personales</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${subseriesHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </td>
+    `;
+    // --- FIN DE LA MODIFICACIÓN ---
+    return fila;
 }
 
 // Cargar series según selección
@@ -138,7 +186,7 @@ async function cargarSeriesCADIDO() {
       ordenarSubseriesPorId(series);
 
       // Llenar la tabla con las series
-      llenarTablaCADIDO(series);
+      cargarTablaCADIDO(series);
   } catch (error) {
       //console.error('Error al cargar series:', error);
       
@@ -402,7 +450,7 @@ async function cargarSeriesCADIDOManual(codigoSeccion) {
       // Ordenar subseries dentro de cada serie
       ordenarSubseriesPorId(series);
 
-      llenarTablaCADIDO(series);
+      cargarTablaCADIDO(series);
   } catch (error) {
       console.error('Error al recargar series:', error);
   }

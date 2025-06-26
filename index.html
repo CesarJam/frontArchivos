@@ -1,32 +1,33 @@
-<html lang="es" data-bs-theme="dark">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dependencias</title>
-  
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<html lang="es">
 
-    <!-- Bootstrap CSS & JS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
-    
-    
-    <!-- Bootstrap Select -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dependencias</title>
 
-    
-    <!-- Custom styles -->
-    <link href="dashboard.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/estilo.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    
- 
-  </head>
+
+  <!-- Custom styles -->
+  <link href="dashboard.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+  <!-- jQuery (necesario para bootstrap-select) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Bootstrap CSS y JS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <!-- Bootstrap Select -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
+
+</head>
 
 <body>
   <!--HEADER DE TODA LA PAGINA-->
@@ -37,19 +38,19 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <h4 style="color: rgb(173, 177, 180);">Consejería Jurídica del Poder Ejecutivo del Estado de Guerrero</h4>
-    <div class="navbar-nav">
+    <!--<div class="navbar-nav">
       <div class="nav-item text-nowrap">
         <a class="nav-link px-3" href="#">Sign out</a>
       </div>
-    </div>
+    </div>-->
   </header>
 
   <!--TODAS LAS PAGINAS-->
   <div class="container-fluid">
     <div class="row">
       <!--CUADRO DE NAVEGACION DE LA IZQUIERDA-->
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse bg-body-tertiary">
+        <div class="position-sticky pt-3 d-flex flex-column h-100">
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link active" href="#" data-target="cuadro">
@@ -82,46 +83,76 @@
               </a>
             </li>
           </ul>
+
+          <div class="dropdown border-top mt-auto">
+            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle p-3" id="dropdownUser2"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-display-fill me-2"></i>
+              <strong>Tema</strong>
+            </a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+              <li>
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+                  <i class="bi bi-sun-fill me-2"></i>
+                  Claro
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+                  <i class="bi bi-moon-stars-fill me-2"></i>
+                  Oscuro
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto">
+                  <i class="bi bi-circle-half me-2"></i>
+                  Automático
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </nav>
       <!-- Páginas -->
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <!--Pagina de CUADRO GENERAL SECCIONES-->
+        <!--Pagina de CUADRO GENERAL-->
         <div id="cuadro" class="page">
           <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Cuadro General de Clasificación Archivistica</h1>
-            <!--Botones de exportar y calendario-->
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group me-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportarExcel()">Exportar a
-                  Excel</button>
+                <button id="btnExportarCuadro" type="button" class="btn btn-sm btn-outline-secondary">
+                  Exportar a Excel
+                </button>
               </div>
               <div>
-                <div style="position: relative;"> <!-- Calendario -->
-                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="mostrarCalendario()">
+                <div style="position: relative;">
+                  <button id="btnCalendarioCuadro" type="button" class="btn btn-sm btn-outline-secondary">
                     <span data-feather="calendar"></span>
-                    <span id="fechaDisplay">Mostrar Fecha</span>
+                    <span id="fechaDisplayCuadro">Mostrar Fecha</span>
                   </button>
-                  <input type="text" id="fechaInput"
+                  <input type="text" id="fechaInputCuadro"
                     style="opacity: 0; width: 0; height: 0; position: absolute; right: 0;">
                 </div>
               </div>
             </div>
           </div>
-          <div>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"
-              onclick="limpiarFormulario()">
-              Registrar nuevo
-            </button>
-          </div>
-          <hr>
-          <div><!--Tabla de secciones-->
-            <div>
-              <div id="datos"></div>
+
+          <div class="container ps-0 pe-0 mb-3">
+            <div class="row">
+              <div class="col"> <button id="btnRegistrarCuadro" type="button" class="btn btn-primary"
+                  data-bs-toggle="modal" data-bs-target="#modalCuadro">
+                  Registrar nuevo
+                </button>
+              </div>
             </div>
           </div>
-        </div><!--TERMINA PAGINA DE CUADRO GENERAL SECCIONES-->
+          <hr>
+          <div class="container mt-3">
+            <div id="datos"></div>
+          </div>
+        </div><!--TERMINA PAGINA DE CUADRO GENERAL-->
 
         <!--Pagina de Series-->
         <div id="series" class="page" style="display:none;">
@@ -185,15 +216,15 @@
           <hr>
           <div>
             <div class="container mt-3">
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered">
+              <div class="table-responsive table-rounded-container">
+                <table class="table table-hover table-custom">
                   <thead class="table-dark">
                     <tr>
-                      <th style="width: 10%">ID</th>
-                      <th style="width: 60%">Nombre</th>
-                      <th style="width: 10%">Código Sección</th>
-                      <th style="width: 10%;">Editar</th>
-                      <th style="width: 10%;">Eliminar</th>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Código Sección</th>
+                      <th>Editar</th>
+                      <th>Eliminar</th>
                     </tr>
                   </thead>
                   <tbody id="tabla-series"></tbody>
@@ -261,14 +292,14 @@
           <hr>
           <div>
             <div class="container mt-3">
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered">
+              <div class="table-responsive table-rounded-container">
+                <table class="table table-hover table-custom">
                   <thead class="table-dark">
                     <tr>
-                      <th style="width: 10%">ID</th>
-                      <th style="width: 60%">Nombre</th>
-                      <th style="width: 10%">Código Sección</th>
-                      <th style="width: 10%;">Editar</th>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Código Sección</th>
+                      <th>Editar</th>
 
                     </tr>
                   </thead>
@@ -277,7 +308,7 @@
               </div>
             </div>
           </div>
-        </div><!-- TERMINA EL DIV DE SERIES-->
+        </div><!-- TERMINA EL DIV DE CADIDO-->
 
         <!--Pagina de INVENTARIO-->
         <div id="inventario" class="page" style="display:none;">
@@ -301,11 +332,11 @@
             </ul>
             <!-- Contenido de las pestañas -->
             <div class="tab-content mt-3" id="myTabContent">
-              <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+              <div class="tab-pane fade" id="tab1" role="tabpanel">
                 <!--AQUI COMIENZA EL INVENTARIO PRINCIPAL-->
                 <div
                   class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                  
+
                   <!--Botones de exportar y calendario-->
                   <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
@@ -367,9 +398,9 @@
                           <label for="selectStatusInventario" class="form-label">Status:</label>
                           <select class="form-select" id="selectStatusInventario">
                             <option selected>Todos</option>
-                            <option value="Recepcionado">Recepcionado</option>
-                            <option value="En Trámite">En Trámite</option>
-                            <option value="Concluido">Concluido</option>
+                            <option value="registro">Recepcionado</option>
+                            <option value="tramite">En Trámite</option>
+                            <option value="concluido">Concluido</option>
                           </select>
                         </div>
                       </div>
@@ -383,18 +414,19 @@
                     <br>
                     <!--Filtro de Status-->
                     <input type="text" id="filtroAsunto" class="form-control mb-2" placeholder="Filtrar por Asunto">
-                    <div class="table-responsive">
-                      <table class="table table-hover table-bordered" id="tablaInventario">
+                    <div class="table-responsive table-rounded-container">
+                      <table class="table table-hover table-custom" id="tablaInventario">
                         <thead class="table-dark">
                           <tr>
-                            <th colspan="1">No Expediente</th>
-                            <th colspan="2">Asunto</th>
-                            <th colspan="1">Status</th>
-                            <th colspan="1">Editar</th>
-                            <th colspan="1">Eliminar</th>
+                            <th>No Expediente</th>
+                            <th>Asunto</th>
+                            <th>Status</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
                           </tr>
                         </thead>
                         <tbody id="tabla-inventario"></tbody>
+
                       </table>
                     </div>
                   </div>
@@ -409,10 +441,9 @@
                     <thead class="table-dark">
                       <tr>
                         <th colspan="1">Número Expediente</th>
-                        <th colspan="2">Asunto</th>
+                        <th colspan="3">Asunto</th>
                         <th colspan="1">Status</th>
                         <th colspan="1">Editar</th>
-                        <th colspan="1">--</th>
                       </tr>
                     </thead>
                     <tbody id="tabla-inventarioTurnado"></tbody>
@@ -420,7 +451,7 @@
                 </div>
               </div>
               <div class="tab-pane fade" id="tab3" role="tabpanel">
-                
+
                 <!--AQUI COMIENZA EL MODULO DE DEPENDENCIAS-->
                 <div
                   class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -456,7 +487,8 @@
                       </button>
                     </div>
                     <!--Filtro de Dependencias-->
-                    <input type="text" id="filtroDependencias" class="form-control mb-2" placeholder="Filtrar por nombre">
+                    <input type="text" id="filtroDependencias" class="form-control mb-2"
+                      placeholder="Filtrar por nombre">
                     <div class="table-responsive">
                       <table class="table table-hover table-bordered" id="tablaDependencias">
                         <thead class="table-dark">
@@ -483,27 +515,30 @@
           <h1>Prueba</h1>
 
           <nav>
-              <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                  <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
-                  <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
-                  <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
-              </div>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
+              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
+              <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+            </div>
           </nav>
-      
+
           <div class="tab-content" id="nav-tabContent">
-              <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                  <p>Contenido de Home</p>
-              </div>
-              <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                  <p>Contenido de Profile</p>
-              </div>
-              <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                  <p>Contenido de Contact</p>
-              </div>
+            <div class="tab-pane fade" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+              <p>Contenido de Home</p>
+            </div>
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+              <p>Contenido de Profile</p>
+            </div>
+            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+              <p>Contenido de Contact</p>
+            </div>
           </div>
 
 
-            
+
         </div>
 
         <!-- Repite para agregar mas paginas -->
@@ -531,7 +566,7 @@
   </div><!-- TERMINA EL MODAL DE EXITO-->
 
   <!--Modal de registro CUADRO SECCIONES-->
-  <div class="modal fade" id="myModal" tabindex="-1">
+  <div class="modal fade" id="modalCuadro" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -543,7 +578,7 @@
             <div class="mb-3">
               <label for="id" class="form-label">Código</label>
               <!--<input type="text" class="form-control" id="id">-->
-              <input type="text" id="id" class="form-control">
+              <input type="text" id="idCuadroGeneral" class="form-control">
             </div>
             <div class="mb-3">
               <label for="seccion" class="form-label">Sección</label>
@@ -560,7 +595,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="guardarBtn" onclick="guardarDatos()">Guardar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtn" onclick="guardarSecciones()">Guardar</button>
         </div>
       </div>
     </div>
@@ -690,10 +725,10 @@
         </div>
         <div class="modal-body">
           <form id="formularioInventario">
-          <!--id usado para editar-->
-          <input type="text" class="form-control" id="idInventario" hidden>
-          <input type="text" class="form-control" id="areaCreadoModalInventario" hidden>
-          
+            <!--id usado para editar-->
+            <input type="text" class="form-control" id="idInventario" hidden>
+            <input type="text" class="form-control" id="areaCreadoModalInventario" hidden>
+
             <!-- Número de Expediente (Generado Automáticamente) -->
             <div class="mb-3">
               <label for="numeroExpedienteModalInventario" class="form-label">Número de Expediente</label>
@@ -706,25 +741,22 @@
               <input type="text" class="form-control" id="asuntoModalInventario" required>
             </div>
             <!--Dependencias-->
+            <div class="row">
+              <div class="col-sm-9">
+                <div class="form-group">
+                  <select class="selectpicker form-control" data-live-search="true" data-style="btn-primary"
+                    id="dependenciaModalInventario" name="dependencias" data-size="5">
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-3"><button type="button" class="btn btn-success" id="btnAgregarDependencias">
+                  <i class="bi bi-plus-circle"></i> Agregar
+                </button></div>
+            </div>
             <div class="mb-3">
-              <label for="dependenciaModalInventario" class="form-label">Dependencia</label>
-              <select class="selectpicker form-control" id="dependenciaModalInventario" title="Seleccione una opción" data-live-search="true">
-          
-              </select>
-              <button type="button" class="btn btn-primary mt-2" id="btnAgregarDependencias">
-                <i class="bi bi-plus-circle"></i> Agregar
-              </button>
-              <h5 class="mt-3">Áreas Seleccionadas:</h5>
+              <h5 class="mt-3">Lista de dependencias</h5>
               <ul id="listaDependencias"></ul>
             </div>
-
-            <!--Dependencia
-            <label for="dependenciaModalInventario" class="form-label">Dependencia</label>
-            <select class="form-select" id="dependenciaModalInventario">
-            </select>-->
-            
-            <!-- Dependencia -->
-            
 
             <!-- Tipo -->
             <div class="mb-3">
@@ -770,7 +802,7 @@
               <!--Fecha Tramite-->
               <label for="statusTramiteFechaModalInventario" class="form-label">Fecha de trámite</label>
               <input type="date" class="form-control" id="statusTramiteFechaModalInventario">
-              <!--Hora Tramite-->              
+              <!--Hora Tramite-->
               <label for="statusTramiteHoraModalInventario" class="form-label">Hora de registro</label>
               <input type="time" class="form-control" id="statusTramiteHoraModalInventario">
               <!--Observaciones tramite-->
@@ -785,7 +817,7 @@
               <!--Fecha Concluido-->
               <label for="statusConcluidoFechaModalInventario" class="form-label">Fecha de Concluido</label>
               <input type="date" class="form-control" id="statusConcluidoFechaModalInventario">
-              <!--Hora Concluido-->              
+              <!--Hora Concluido-->
               <label for="statusConcluidoHoraModalInventario" class="form-label">Hora de registro</label>
               <input type="time" class="form-control" id="statusConcluidoHoraModalInventario">
               <!--Observaciones Concluido-->
@@ -918,8 +950,10 @@
         <!-- Botones del Modal -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="modificarBtnModalInventario" onclick="modificarInventario()">Modificar</button>
-          <button type="button" class="btn btn-primary" id="guardarBtnModalinventario" onclick="guardarInventario()">Guardar</button>
+          <button type="button" class="btn btn-primary" id="modificarBtnModalInventario"
+            onclick="modificarInventario()">Modificar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtnModalinventario"
+            onclick="guardarInventario()">Guardar</button>
         </div>
       </div>
     </div>
@@ -935,28 +969,43 @@
         </div>
         <div class="modal-body">
           <form id="formularioDependencias">
-          <!--id usado para editar-->
-          <input type="text" class="form-control" id="idDependencias" hidden>
+            <!--id usado para editar-->
+            <input type="text" class="form-control" id="idDependencias" hidden>
             <!-- Nombre -->
             <div class="mb-3">
               <label for="nombreModalDependencias" class="form-label">Nombre de la dependencia</label>
               <input type="text" class="form-control" id="nombreModalDependencias" required>
             </div>
-            
+
           </form>
         </div>
 
         <!-- Botones del Modal -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="modificarBtnModalDependencias" onclick="modificarDependencias()">Modificar</button>
-          <button type="button" class="btn btn-primary" id="guardarBtnModalDependencias" onclick="guardarDependencias()">Guardar</button>
+          <button type="button" class="btn btn-primary" id="modificarBtnModalDependencias"
+            onclick="modificarDependencias()">Modificar</button>
+          <button type="button" class="btn btn-primary" id="guardarBtnModalDependencias"
+            onclick="guardarDependencias()">Guardar</button>
         </div>
       </div>
     </div>
   </div>
 
-  
+  <!--
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+
+  <!-- Al final del <body>, después de Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!--Tema del sistema-->
+  <script src="scripts/temaClaroObscuro.js"></script>
 
   <!--Script de secciones-->
   <script src="scripts/seccionesScripts.js"></script>
@@ -965,9 +1014,10 @@
   <script src="scripts/cadido.js"></script>
   <!--Script de inventario-->
   <script src="scripts/inventarioScripts.js"></script>
-  
+
   <!--Script de dependencias-->
   <script src="scripts/dependenciasScript.js"></script>
+
   <!--Scrip de navegacion-->
   <script src="scripts/navegacion.js"></script>
   <!--Script del calendario-->
@@ -986,13 +1036,20 @@
   -->
 
   <!--<script src="dashboard.js"></script>-->
-  <!-- Al final del <body>, después de Bootstrap -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-  
 
 
+  <!--
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  -->
+
+
+  <!-- Bootstrap JS 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+-->
+
+  <!--Script de manejoModalDependencias-->
+  <script src="manejoDependencias.js"></script>
+
 </body>
 
 </html>

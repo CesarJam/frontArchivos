@@ -11,7 +11,7 @@ async function obtenerDatos() {
         }
 
         const datos = await respuesta.json();
-        mostrarDatos(datos);
+        cargarTablaCuadro(datos);
 
     } catch (error) {
         console.error('Error al obtener datos:', error);
@@ -19,47 +19,99 @@ async function obtenerDatos() {
     }
 }
 
-function mostrarDatos(datos) {
+function cargarTablaCuadro(datos) {
     const contenedor = document.getElementById('datos');
+    contenedor.innerHTML = ''; // Limpiamos el contenedor
 
     if (!Array.isArray(datos) || datos.length === 0) {
-        contenedor.innerHTML = "No hay datos disponibles";
+        contenedor.innerHTML = '<p class="text-center">No hay datos disponibles.</p>';
         return;
     }
 
-    let tabla = '<table class="table" id="miTabla"><thead><tr>';
+    // 1. Creamos los elementos principales de la tabla
+    const tabla = document.createElement('table');
+    tabla.className = 'table table-hover'; // Añadimos las clases que queramos
+    tabla.id = 'miTabla';
 
-    tabla += "<th>Código</th>";
-    tabla += "<th>Sección</th>";
-    tabla += "<th>Función</th>";
-    tabla += "<th>Editar</th>";
+    const thead = document.createElement('thead');
+    thead.className = 'table-dark';
+    thead.innerHTML = `
+        <tr>
+            <th>Código</th>
+            <th>Sección</th>
+            <th>Función</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
+    `;
 
-    tabla += "<th>Eliminar</th>";
-    tabla += '</tr></thead><tbody>';
+    const tbody = document.createElement('tbody');
+    
+    // 2. Usamos un DocumentFragment para mejor rendimiento
+    const fragmento = document.createDocumentFragment();
 
-    // Llenar la tabla con los datos
+    // 3. Iteramos y llamamos a la función ayudante para cada fila
     datos.forEach(item => {
-        tabla += '<tr>';
-        // Mostrar los campos en el orden deseado: id, seccion, funcion
-        tabla += `<td>${item.id}</td>`;
-        tabla += `<td>${item.seccion}</td>`;
-        tabla += `<td>${item.funcion}</td>`;
-        //Botón editar
-        tabla += `<td><button class="btn btn-warning btn-sm" onclick="editarDatos('${item.id}')"><i class="bi bi-pencil"></i></button></td>`;
-
-        // Botón de eliminar
-        tabla += `<td><button class="btn btn-danger btn-sm" onclick="eliminarDatosSecciones('${item.id}')"><i class="bi bi-trash"></i></button></td>`;
-
-        tabla += '</tr>';
+        const fila = crearFilaCuadroGeneral(item);
+        fragmento.appendChild(fila);
     });
-    tabla += '</tbody></table>';
 
-    contenedor.innerHTML = tabla;
+   // 4. Ensamblamos la tabla
+    tbody.appendChild(fragmento);
+    tabla.appendChild(thead);
+    tabla.appendChild(tbody);
+
+    // 5. ¡AQUÍ ESTÁ LA CORRECCIÓN! Creamos el contenedor con NUESTRA clase reutilizable
+    const contenedorTabla = document.createElement('div');
+    
+    // Le añadimos ambas clases para que sea responsive Y tenga los bordes redondeados
+    contenedorTabla.className = 'table-responsive table-rounded-container';
+
+    // 6. Metemos la tabla completa que ya construimos dentro de este nuevo div
+    contenedorTabla.appendChild(tabla);
+    
+    // 7. Añadimos el contenedor completo (con la tabla adentro) al div principal #datos
+    contenedor.appendChild(contenedorTabla);
+}
+
+function crearFilaCuadroGeneral(item) {
+    // Creamos el elemento de la fila
+    const fila = document.createElement('tr');
+
+    // Usamos un template literal para el contenido, es limpio y legible
+    fila.innerHTML = `
+        <td>${item.id}</td>
+        <td>${item.seccion}</td>
+        <td>${item.funcion}</td>
+        <td>
+            <button class="btn btn-warning btn-sm btn-editar-cuadro" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm btn-eliminar-cuadro" title="Eliminar">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+
+    // Asignamos los eventos con addEventListener (la forma segura y moderna)
+    const btnEditar = fila.querySelector('.btn-editar-cuadro');
+    btnEditar.addEventListener('click', () => {
+        editarDatos(item.id); // Llama a tu función original
+    });
+
+    const btnEliminar = fila.querySelector('.btn-eliminar-cuadro');
+    btnEliminar.addEventListener('click', () => {
+        eliminarDatosSecciones(item.id); // Llama a tu función original
+    });
+
+    return fila;
 }
 
 //Función para guardar datos
-async function guardarDatos() {
-    const codigo = document.getElementById('id').value;
+async function guardarSecciones() {
+    const codigo = document.getElementById('idCuadroGeneral').value;
     const seccion = document.getElementById('seccion').value;
     const funcion = document.getElementById('funcion').value;
 
@@ -83,15 +135,15 @@ async function guardarDatos() {
         }
         idEditar = null; // Resetear idEditar después de la acción
         //alert('Datos guardados con éxito');
-        document.querySelector("#myModal form").reset();
+        document.querySelector("#modalCuadro form").reset();
 
         // Mostrar el modal de éxito
         let modalExito = new bootstrap.Modal(document.getElementById('successModal'));
         modalExito.show();
-
+        document.getElementById('idCuadroGeneral').disabled = false;
         // Cerrar el modal
         obtenerDatos();
-        let modal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+        let modal = bootstrap.Modal.getInstance(document.getElementById('modalCuadro'));
         modal.hide();
 
     } catch (error) {
@@ -103,19 +155,19 @@ async function guardarDatos() {
 //Función para editar datos
 function editarDatos(id) {
     idEditar = id;
-    document.getElementById('id').disabled = true;
+    document.getElementById('idCuadroGeneral').disabled = true;
     // Obtener los datos del registro y llenar el formulario
     fetch(`https://api-nijc7glupa-uc.a.run.app/secciones/cuadroGeneral/${id}`)
         .then(res => res.json())
         .then(data => {
-            document.getElementById('id').value = data.id;
+            document.getElementById('idCuadroGeneral').value = data.id;
             document.getElementById('seccion').value = data.seccion;
             document.getElementById('funcion').value = data.funcion;
             document.getElementById('guardarBtn').textContent = 'Modificar'; // Cambiar el texto del botón
 
-            let modal = new bootstrap.Modal(document.getElementById('myModal'));
+            let modal = new bootstrap.Modal(document.getElementById('modalCuadro'));
             modal.show();
-
+            document.getElementById('guardarBtn').textContent = 'Guardar';
             ;
         })
         .catch(err => console.error('Error al obtener los datos para editar:', err));
@@ -165,8 +217,8 @@ async function eliminarDatosSecciones(id) {
 
 //reset del formulario
 function limpiarFormulario() {
-    document.getElementById('id').disabled = false; // Habilitar
-    document.getElementById('id').value = "";
+    document.getElementById('idCuadroGeneral').disabled = false; // Habilitar
+    document.getElementById('idCuadroGeneral').value = "";
     document.getElementById('seccion').value = "";
     document.getElementById('guardarBtn').textContent = 'Guardar'; // Resetear el texto del botón
 }
@@ -232,3 +284,16 @@ function exportarExcel() {
 }
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (tus otros listeners que ya tienes) ...
+
+    // Asignar eventos a los botones de la sección Cuadro General
+    const btnExportarCuadro = document.getElementById('btnExportarCuadro');
+    if(btnExportarCuadro) btnExportarCuadro.addEventListener('click', exportarExcel);
+
+    const btnCalendarioCuadro = document.getElementById('btnCalendarioCuadro');
+    if(btnCalendarioCuadro) btnCalendarioCuadro.addEventListener('click', mostrarCalendario); // Asegúrate que la función se llame así
+
+    const btnRegistrarCuadro = document.getElementById('btnRegistrarCuadro');
+    if(btnRegistrarCuadro) btnRegistrarCuadro.addEventListener('click', limpiarFormulario);
+});

@@ -1,32 +1,321 @@
 .page {
-    width: 100%;
-    height: 100%;
-    transition: opacity 1.5s ease;
-  }
-  .page:not([style*="display: block"]) {
-    opacity: 0;
-    display: block !important;
-    height: 0;
-    overflow: hidden;
-  }
+  width: 100%;
+  height: 100%;
+  transition: opacity 1.5s ease;
+}
 
-  .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
+.page:not([style*="display: block"]) {
+  opacity: 0;
+  display: block !important;
+  height: 0;
+  overflow: hidden;
+}
 
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
+
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+/*estilo redondeado de las tablas*/
+
+.table-rounded-container {
+  /* 1. El radio del borde que queremos */
+  border-radius: 10px; /* Puedes usar el valor que prefieras: 0.5rem, 12px, etc. */
+  
+  /* 2. El truco para que funcione con tablas */
+  overflow: hidden;
+
+  /* 3. El borde visible para el contenedor */
+  border: 1px solid #dee2e6; /* Color de borde estándar de Bootstrap */
+}
+
+/*
+ * Ajuste opcional pero recomendado:
+ * Quita el margen inferior de las tablas que están dentro de este contenedor
+ * para asegurar un ajuste visual perfecto.
+ */
+.table-rounded-container .table {
+  margin-bottom: 0;
+}
+
+/* ================================================================== */
+/* CSS FINAL Y COMPLETO PARA TABLA DE SERIES (ESTILO INVENTARIO) */
+/* ================================================================== */
+
+/* --- Animación de despliegue personalizada --- */
+/* La animación se aplica al DIV INTERNO para un mejor efecto */
+
+.subseries,
+.subseries td {
+    padding: 0 !important;
+    border: none !important;
+}
+.subseries-content {
+  /*background-color: #f8f9fa;*/
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  /*padding: 0 1rem; /* Padding horizontal para que no se vea apretado */
+  transition: max-height 0.4s ease-in-out, opacity 0.4s ease, padding 0.4s ease;
+}
+
+/* Cuando la fila .subseries tiene la clase .show (que pone Bootstrap), 
+   expandimos el div interno .subseries-content */
+.subseries.show .subseries-content {
+  max-height: 2000px; /* Un valor alto para cualquier contenido */
+  opacity: 1;
+  padding: 1rem; /* Padding completo cuando está visible */
+ }
+
+ /* --- Icono de despliegue --- */
+.toggle-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  margin-right: 8px;
+}
+
+.toggle-icon.rotado {
+  transform: rotate(90deg);
+}
+.fila-principal-series {
+  cursor: pointer;
+}
+
+/* ================================================================== */
+/* CSS FINAL Y COMPLETO PARA TABLA DE CADIDO () */
+/* ================================================================== */
+
+/* --- Animación de despliegue personalizada --- */
+/* La animación se aplica al DIV INTERNO para un mejor efecto */
+
+.fila-principal-CADIDO {
+  cursor: pointer;
+}
+
+/* ================================================================== */
+/* CSS RECOMENDADO PARA TABLA INVENTARIO DOCUMENTAL RESPONSIVA CON FILAS DE DETALLE */
+/* ================================================================== */
+
+.fila-detalle-inventario,
+.fila-detalle-inventario td {
+    padding: 0 !important;
+    border: none !important;
+    /* Esto es crucial para que la fila colapse por completo */
+}
+
+/* Estilos de la animación (funcionan en todos los tamaños) */
+.contenido-detalle-inventario {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  /*padding: 0 1rem; */
+  transition: max-height 0.4s ease-in-out, opacity 0.4s ease, padding 0.4s ease;
+  /*background-color: #f8f9fa; /* Un fondo sutil para el detalle */
+}
+
+.contenido-detalle-inventario.expandido-inventario {
+  max-height: 2000px; /* Un valor alto para permitir cualquier contenido */
+  opacity: 1;
+  padding: 1rem; /* Añade padding solo cuando está expandido */
+}
+
+.toggle-icon-inventario {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  margin-right: 8px;
+}
+
+.toggle-icon-inventario.rotar-inventario {
+  transform: rotate(90deg);
+}
+
+.fila-principal-inventario {
+  cursor: pointer;
+}
+
+
+.option-warning {
+  /* Usamos las variables de Bootstrap 5 para los colores de advertencia */
+  background-color: var(--bs-warning-bg-subtle);
+  /* Fondo sutil para alertas de advertencia */
+  color: var(--bs-warning-text-emphasis);
+  /* Color de texto oscuro y accesible para advertencia */
+  font-weight: bold;
+}
+
+/* --- Estilos para la Barra Lateral en Modo Oscuro --- */
+
+/* 1. Cambia el color de todos los enlaces de la barra lateral a un color claro */
+[data-bs-theme="dark"] #sidebarMenu .nav-link {
+  /* Usamos la variable de Bootstrap para el color del texto principal en modo oscuro */
+  color: var(--bs-body-color);
+}
+
+/* 2. Hace que el enlace activo sea un poco más brillante para que destaque */
+[data-bs-theme="dark"] #sidebarMenu .nav-link.active {
+  /* La variable para el color de texto "primario" en modo oscuro suele ser un blanco más puro */
+  color: var(--bs-primary-text-emphasis);
+}
+
+/* 3. Arregla el color del texto del desplegable "Tema" en la parte inferior */
+[data-bs-theme="dark"] #sidebarMenu .dropdown-toggle {
+  color: var(--bs-body-color);
+}
+
+/* 4. Opcional: asegura que los íconos (Feather Icons) también tomen el color del texto */
+[data-bs-theme="dark"] #sidebarMenu .nav-link [data-feather] {
+  stroke: currentColor;
+  /* 'currentColor' hace que el borde del ícono sea del mismo color que el texto */
+}
+
+
+/*tabla custom*/
+
+/* Estilos para la tabla responsiva tipo tarjeta */
+
+/* ================================================================== */
+/* CSS RESPONSIVO DEFINITIVO Y UNIFICADO (26-JUN-2025)        */
+/* ================================================================== */
+@media (max-width: 767.98px) {
+
+    /* --- 1. ESTRUCTURA BÁSICA DE LA TARJETA --- */
+
+    /* Oculta los encabezados de las tablas principales */
+    .table > thead {
+        display: none;
     }
-  }
 
-  .subserie-item {
-    background-color: #f8f9fa;
-  }
-  .modal-content {
-    padding: 20px;
-  }
+    /* Estilo para la fila principal (parte superior de la tarjeta) */
+    .fila-principal {
+        display: block;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        border-top-left-radius: .35rem;
+        border-top-right-radius: .35rem;
+    }
+
+    /* Estilo para la fila de detalle (parte expandible de la tarjeta) */
+    .fila-detalle {
+        display: block;
+        border-left: 1px solid #dee2e6;
+        border-right: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-bottom-left-radius: .35rem;
+        border-bottom-right-radius: .35rem;
+        margin-bottom: 1rem;
+    }
+
+    /* --- 2. ESTILO PARA EL CONTENIDO DE LA FILA PRINCIPAL --- */
+
+    /* Cada celda se convierte en una línea con etiqueta y valor */
+    .fila-principal > td {
+        display: block;
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .fila-principal > td:last-child {
+        border-bottom: none;
+    }
+
+    /* Se crea la etiqueta usando el atributo data-label */
+    .fila-principal > td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.75rem;
+        width: 45%;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    /* --- 3. ESTILO PARA EL CONTENIDO DE LA FILA DE DETALLE --- */
+
+    /* La celda de la fila de detalle es un simple contenedor */
+    .fila-detalle > td {
+        display: block;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* --- 4. ESTILO PARA LA TABLA ANIDADA (EL CASO DE CADIDO) --- */
+
+    .table-cadido-responsive thead {
+        display: none;
+    }
+
+    .table-cadido-responsive > tbody > tr {
+        display: block;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .table-cadido-responsive > tbody > tr:last-child {
+        border-bottom: 0;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .table-cadido-responsive > tbody > tr > td {
+        display: block;
+        text-align: right;
+        position: relative;
+        padding-left: 45%;
+        border: none;
+    }
+
+    .table-cadido-responsive > tbody > tr > td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.5rem;
+        width: 40%;
+        padding-right: 10px;
+        text-align: left;
+        font-weight: bold;
+    }
+}
+
+
+
+/*iframe de la vista previa del pdf*/
+.responsive-iframe {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  /* 16:9 ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.responsive-iframe iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--bs-border-color); 
+  
+  border: none; /* Eliminamos el borde por completo */
+
+  /* Usamos un radio de borde un poco más grande para el look de tarjeta. */
+  border-radius: var(--bs-border-radius-lg); 
+
+  /* Aplicamos la sombra estándar de Bootstrap, que también es adaptable. */
+  box-shadow: var(--bs-box-shadow); 
+}
