@@ -129,7 +129,7 @@ function crearFilaDetalleCADIDO(serie) {
                 <div class="p-3 border rounded"> 
                     <h6>Detalles de "${serie.nombre}"</h6>
                     <div class="table-responsive">
-                        <table class="table table-striped table-nested-responsive">
+                        <table class="table table-striped table-cadido-responsive">
                             <thead>
                                 <tr>
                                     <th>Código</th>

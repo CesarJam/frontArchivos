@@ -1,14 +1,20 @@
 .page {
-  width: 100%;
-  height: 100%;
-  transition: opacity 1.5s ease;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transform: translateY(0); /* Posición final: sin desplazamiento */
+    /* Transición para la opacidad Y la posición */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
+/* Estado inicial de las páginas ocultas */
 .page:not([style*="display: block"]) {
-  opacity: 0;
-  display: block !important;
-  height: 0;
-  overflow: hidden;
+    opacity: 0;
+    /* Comienza 20px más abajo de su posición final */
+    transform: translateY(20px); 
+    display: block !important;
+    height: 0;
+    overflow: hidden;
 }
 
 
@@ -40,7 +46,7 @@
   overflow: hidden;
 
   /* 3. El borde visible para el contenedor */
-  border: 1px solid #dee2e6; /* Color de borde estándar de Bootstrap */
+  /*border: 1px solid #dee2e6; /* Color de borde estándar de Bootstrap */
 }
 
 /*
@@ -200,12 +206,20 @@
     }
 
     /* Estilo para la fila principal (parte superior de la tarjeta) */
+    /* Opción 2: Estilo con Borde de Énfasis */
     .fila-principal {
         display: block;
-        border: 1px solid #dee2e6;
-        border-bottom: none;
-        border-top-left-radius: .35rem;
-        border-top-right-radius: .35rem;
+        background-color: var(--bs-secondary-bg);
+        border: 1px solid var(--bs-border-color-translucent);
+        
+        /* ¡La clave! Un borde izquierdo más grueso usando el color primario del tema. */
+        border-left: 10px solid var(--bs-primary);
+        
+        /* Usamos el radio de borde estándar de Bootstrap. */
+        border-radius: var(--bs-border-radius);
+        
+        margin-bottom: 1rem;
+        box-shadow: var(--bs-box-shadow-sm);
     }
 
     /* Estilo para la fila de detalle (parte expandible de la tarjeta) */
@@ -227,7 +241,7 @@
         text-align: right;
         position: relative;
         padding-left: 50%;
-        border-bottom: 1px solid #f0f0f0;
+        /*border-bottom: 1px solid #f0f0f0;*/
     }
     
     .fila-principal > td:last-child {
@@ -319,3 +333,4 @@
   /* Aplicamos la sombra estándar de Bootstrap, que también es adaptable. */
   box-shadow: var(--bs-box-shadow); 
 }
+

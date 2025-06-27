@@ -40,8 +40,7 @@ function cargarTablaCuadro(datos) {
             <th>Código</th>
             <th>Sección</th>
             <th>Función</th>
-            <th>Editar</th>
-            <th>Eliminar</th>
+            <th>Acción</th>
         </tr>
     `;
 
@@ -77,33 +76,40 @@ function cargarTablaCuadro(datos) {
 function crearFilaCuadroGeneral(item) {
     // Creamos el elemento de la fila
     const fila = document.createElement('tr');
+    
+    // --- INICIO DE LA MODIFICACIÓN ---
 
-    // Usamos un template literal para el contenido, es limpio y legible
+    // PASO 1: Asignamos la clase para que el CSS la reconozca como una tarjeta en móviles.
+    // Añadimos un nombre específico y el nombre común.
+    fila.className = 'fila-cuadro-general fila-principal'; 
+
+    // PASO 2: Añadimos el atributo data-label a cada celda <td>
+    // El texto debe coincidir con el encabezado de la columna.
     fila.innerHTML = `
-        <td>${item.id}</td>
-        <td>${item.seccion}</td>
-        <td>${item.funcion}</td>
-        <td>
+        <td data-label="Código">${item.id}</td>
+        <td data-label="Sección">${item.seccion}</td>
+        <td data-label="Función">${item.funcion}</td>
+        <td data-label="Acción">
             <button class="btn btn-warning btn-sm btn-editar-cuadro" title="Editar">
                 <i class="bi bi-pencil"></i>
             </button>
-        </td>
-        <td>
             <button class="btn btn-danger btn-sm btn-eliminar-cuadro" title="Eliminar">
                 <i class="bi bi-trash"></i>
             </button>
         </td>
-    `;
 
-    // Asignamos los eventos con addEventListener (la forma segura y moderna)
+    `;
+    // --- FIN DE LA MODIFICACIÓN ---
+
+    // La asignación de eventos se mantiene igual, ya es correcta.
     const btnEditar = fila.querySelector('.btn-editar-cuadro');
     btnEditar.addEventListener('click', () => {
-        editarDatos(item.id); // Llama a tu función original
+        editarDatos(item.id);
     });
 
     const btnEliminar = fila.querySelector('.btn-eliminar-cuadro');
     btnEliminar.addEventListener('click', () => {
-        eliminarDatosSecciones(item.id); // Llama a tu función original
+        eliminarDatosSecciones(item.id);
     });
 
     return fila;

@@ -35,6 +35,26 @@ document.addEventListener("DOMContentLoaded", () => {
     selectAnio.addEventListener("change", ejecutarBusqueda);
     selectSecciones.addEventListener("change", ejecutarBusqueda);
 
+    //aqui mandamos a limpiar el modal Inventario
+    // Obtenemos la referencia a tu modal de Inventario por su ID
+    const modalInventarioEl = document.getElementById('modalInventario');
+
+    // Nos aseguramos de que el modal exista en la página
+    if (modalInventarioEl) {
+        
+        // Escuchamos el evento 'show.bs.modal'
+        // La función del listener es ASÍNCRONA para poder usar 'await' adentro
+        modalInventarioEl.addEventListener('show.bs.modal', async (event) => {
+            
+            // Justo antes de que el modal se muestre, ejecutamos la limpieza y carga de datos.
+            console.log('El modal de Inventario está a punto de abrirse, preparando contenido...');
+            
+            // Usamos 'await' para asegurarnos de que toda la preparación (incluida la carga de series)
+            // se complete antes de que el modal sea visible.
+            await limpiarModalInventario();
+        });
+    }
+
 });
 
 
@@ -148,12 +168,10 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
         <td data-label="No. Exp.">${item.numeroExpediente}</td>
         <td data-label="Asunto"><span class="toggle-icon-inventario">▶</span> ${item.asunto} -<br> ${item.listaDeDependencias} -<br> (${item.subserie.codigoSubserie} - ${item.subserie.nombreSubserie})</td>
         <td data-label="Status" class="status">${tipoUltimoMovimiento}</td>
-        <td data-label="Editar">
+        <td data-label="Acción">
             <button class="btn btn-warning btn-sm btn-editar" title="Editar Registro">
                 <i class="bi bi-pencil"></i>
             </button>
-        </td>
-        <td data-label="Eliminar">
             <button class="btn btn-danger btn-sm btn-eliminar" title="Eliminar Registro">
                 <i class="bi bi-trash"></i>
             </button>
@@ -534,7 +552,7 @@ async function editarRegistroInventario(idInventario) {
     try {
         limpiarUIAreasModal();
         limpiarUIDependencias();
-        llenarSelectAreaTurnado();
+        //llenarSelectAreaTurnado();
         // Obtener los datos del inventario específico
         const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${idInventario}`);
         const inventario = await response.json();
@@ -758,7 +776,11 @@ async function cargarSeccionesInventario() {
 
         const secciones = await response.json();
         const select = document.getElementById('selectSeccionesInventario');
-        select.innerHTML = '<option selected disabled>-- Elige una sección --</option>';
+        const selectModal = document.getElementById('statusCreadoAreaCreadoModalInventario');
+
+        const placeholder = '<option selected disabled>-- Elige una sección --</option>';
+        select.innerHTML = placeholder;
+        selectModal.innerHTML = placeholder;
 
         secciones.forEach(seccion => {
             const option = document.createElement('option');
@@ -766,6 +788,7 @@ async function cargarSeccionesInventario() {
             option.textContent = seccion.id;
             option.dataset.seccion = seccion.seccion || 'No definido'; // Evita valores `undefined`
             select.appendChild(option);
+            selectModal.appendChild(option.cloneNode(true)); //aqui lo duplicamos para usarlo en las areas turnadas
         });
 
     } catch (error) {
@@ -788,7 +811,9 @@ async function cargarSeriesInventario() {
         const selectSecciones = document.getElementById('selectSeccionesInventario');
         const codigoSeccion = selectSecciones.value;
         const selectSeries = document.getElementById('selectSeriesSubseries');
-
+        //
+        console.log("el codigo seleccionado es -->"+codigoSeccion);
+        ///
         if (!codigoSeccion) {
             selectSeries.innerHTML = '<option selected disabled>-- Primero selecciona una sección --</option>';
             return;
@@ -1050,14 +1075,15 @@ async function obtenerUltimoNumeroExpediente() {
     // Asignamos el nuevo número al campo del modal
     document.getElementById("numeroExpedienteModalInventario").value = nuevoNumero;
     //mandamos a traer el llenado del select de las areas para ocuparlo en area turnado
-    llenarSelectAreaTurnado();
+    //llenarSelectAreaTurnado();
 }
 
 //funcion de llenar areas del modal para el area turnado
+/*
 async function llenarSelectAreaTurnado() {
     document.getElementById('statusCreadoAreaCreadoModalInventario').innerHTML = (document.getElementById('selectSeccionesInventario').innerHTML);
 }
-
+*/
 // Función para eliminar un registro del inventario
 async function eliminarRegistroInventario(id, numeroExpediente, asunto) {
     if (!id) {
@@ -1219,17 +1245,14 @@ function crearElementoListaArea(area, index) {
 
 function crearDependenciaHTML(index, dependencia) {
     return `
-      <div class="area-item border p-2 mb-2 rounded">
-        <div class="row g-2">
-          <div class="col-md-9">
-            <span>${dependencia} </span>
-          </div>
-          <div class="col-md-3">
-            <button type="button" class="btn btn-sm btn-danger w-100" 
-                    onclick="eliminarDependenciaLista(${index})">Eliminar</button>
-          </div>
-        </div>
-      </div>
+      <li class="area-item border p-2 mb-2 rounded list-group-item d-flex justify-content-between align-items-center">
+    <span>${dependencia}</span>
+
+    <button type="button" class="btn btn-danger btn-sm" 
+            onclick="eliminarDependenciaLista(${index})">
+        <i class="bi bi-trash"></i>
+    </button> 
+</li>
     `;
 }
 

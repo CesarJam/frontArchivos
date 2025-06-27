@@ -1,34 +1,24 @@
-// Cargar opciones del dropdown inicial
+/**
+ * Obtiene las secciones de la API y coordina la actualización de la UI.
+ */
 async function cargarSecciones() {
     try {
         const response = await fetch('https://api-nijc7glupa-uc.a.run.app/secciones/cuadroGeneral');
         const secciones = await response.json();
-        const select = document.getElementById('selectSecciones');
 
-        select.innerHTML = '<option selected disabled>-- Elige una sección --</option>';
+        // 1. Llama a la función ayudante para rellenar los selectores
+        llenarSelectoresDeSeccion(secciones);
 
-        secciones.forEach(seccion => {
-            const option = document.createElement('option');
-            option.value = seccion.id;
-            option.textContent = seccion.id;
-            option.dataset.seccion = seccion.seccion;
-            select.appendChild(option);
-        });
-
-        // Evento para cambiar de selección
-        select.addEventListener('change', cargarSeries);
-        // Event listener para cuando seleccionen una opción
-        select.addEventListener('change', function () {
-            //const selectedItem = data.find(item => item.id === this.value);
-            const selectedOption = this.options[this.selectedIndex];
-            //document.getElementById('seccionObtenida').value = selectedItem.seccion;
-            //document.getElementById('funcionObtenida').value = selectedItem.funcion;
-            document.getElementById('seccionObtenida').value = selectedOption.dataset.seccion; // <-- Mostramos la sección
-            cargarSeries(); // Cargamos la tabla
-        });
+        // 2. Asigna el manejador de eventos a AMBOS selectores
+        document.getElementById('selectSecciones').addEventListener('change', manejarCambioDeSelector);
+        document.getElementById('selectSeccionesMobile').addEventListener('change', manejarCambioDeSelector);
 
     } catch (error) {
         console.error('Error al cargar secciones:', error);
+        // Opcional: Mostrar un error al usuario en los selectores
+        const errorMsg = '<option selected disabled>Error al cargar</option>';
+        document.getElementById('selectSecciones').innerHTML = errorMsg;
+        document.getElementById('selectSeccionesMobile').innerHTML = errorMsg;
     }
 }
 
@@ -127,12 +117,10 @@ function crearFilaPrincipalSeries(serie) {
         <td data-label="Código" data-bs-toggle="collapse" data-bs-target="#${idFilaDetalle}">
             ${serie.codigoSeccion}
         </td>
-        <td data-label="Editar">
+        <td data-label="Acción">
             <button class="btn btn-warning btn-sm btn-editar-serie" data-serie-id="${serie.id}" title="Editar Serie">
                 <i class="bi bi-pencil"></i>
             </button>
-        </td>
-        <td data-label="Eliminar">
             <button class="btn btn-danger btn-sm btn-eliminar-serie" data-serie-id="${serie.id}" title="Eliminar Serie">
                 <i class="bi bi-trash"></i>
             </button>
@@ -187,7 +175,29 @@ function crearFilaDetalleSeries(serie) {
 }
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', cargarSecciones);
+document.addEventListener('DOMContentLoaded', () => {
+    //Cargamos las secciones en el incio
+    cargarSecciones();
+
+    /* Manejo del modal para que se limpie cuando se cierra o se preciona esc */
+    // Obtenemos la referencia a tu modal por su ID
+    const modalSeriesEl = document.getElementById('modalSeries');
+
+    // Nos aseguramos de que el modal exista en la página antes de añadir el listener
+    if (modalSeriesEl) {
+        
+        // Escuchamos el evento 'hidden.bs.modal'
+        // Este evento es emitido por Bootstrap cuando el modal termina de ocultarse.
+        modalSeriesEl.addEventListener('hidden.bs.modal', event => {
+            
+            // Cuando el modal se haya ocultado completamente, ejecutamos la limpieza.
+            console.log('El modal de Series se ha cerrado, ejecutando limpieza...');
+            limpiarFormularioSeries();
+
+        });
+    }
+
+});
 
 
 //Datos de las subseries que se manejan en el modal
@@ -277,6 +287,12 @@ function limpiarFormularioSeries() {
     document.getElementById('subseriesContainer').innerHTML = ""; // Limpiar HTML
     // O usando la función que ya tienes:
     actualizarSubseriesUI();
+
+    //habilita el boton guardar y oculta el boton editar
+        const buttonGuardar = document.getElementById('guardarBtnSerie');
+        const buttonModificar = document.getElementById('modificarBtnSerie');
+        buttonGuardar.classList.remove('d-none');//Mostrar boton de guardar
+        buttonModificar.classList.add('d-none');//ocultar boton de editar 
 
     //document.getElementById('guardarBtn').textContent = 'Guardar'; // Resetear el texto del botón
 }
@@ -441,11 +457,12 @@ async function editarSeries(idSerie) {
         }));
         actualizarSubseriesUI();
 
-        //habilita el boton edotar y oculta el boton guardar
+        //habilita el boton editar y oculta el boton guardar
         const buttonGuardar = document.getElementById('guardarBtnSerie');
         const buttonModificar = document.getElementById('modificarBtnSerie');
-        buttonGuardar.classList.add('d-none');//ocultar boton de Guardar 
         buttonModificar.classList.remove('d-none');//Mostrar boton de modificar
+        buttonGuardar.classList.add('d-none');//ocultar boton de Guardar 
+        
 
 
         // Abrir el modal
@@ -614,4 +631,64 @@ function ordenarSubseriesPorIdModal(subseries) {
         return numA - numB;
     });
   }
+
+
+  /**MANEJO DE FUNCIONES PARA QUE FUNCIONE EN MOVIL DE MANERA RESPONSIVA */
   
+/**
+ * Rellena los selectores de sección de escritorio y móvil con los datos proporcionados.
+ * @param {Array} secciones - El array de objetos de sección.
+ */
+function llenarSelectoresDeSeccion(secciones) {
+    const selectDesktop = document.getElementById('selectSecciones');
+    const selectMobile = document.getElementById('selectSeccionesMobile');
+
+    // Nos aseguramos de que ambos selectores existan antes de continuar
+    if (!selectDesktop || !selectMobile) return;
+
+    // Limpiamos ambos selectores
+    const placeholder = '<option selected disabled>-- Elige una sección --</option>';
+    selectDesktop.innerHTML = placeholder;
+    selectMobile.innerHTML = placeholder;
+    
+    // Iteramos sobre las secciones y añadimos cada opción a AMBOS selectores
+    secciones.forEach(seccion => {
+        // Creamos la opción una vez
+        const option = document.createElement('option');
+        option.value = seccion.id;
+        option.textContent = seccion.id; // O seccion.nombre, lo que prefieras mostrar
+        option.dataset.seccion = seccion.seccion;
+
+        // La añadimos a ambos selectores (clonando el nodo para el segundo)
+        selectDesktop.appendChild(option);
+        selectMobile.appendChild(option.cloneNode(true));
+    });
+}
+
+/**
+ * Maneja el evento 'change' de los selectores de sección.
+ * Sincroniza ambos selectores, actualiza los campos de texto y carga la tabla.
+ * @param {Event} event - El objeto del evento 'change'.
+ */
+function manejarCambioDeSelector(event) {
+    const selectActual = event.target;
+    const otroSelectId = selectActual.id === 'selectSecciones' ? 'selectSeccionesMobile' : 'selectSecciones';
+    const otroSelect = document.getElementById(otroSelectId);
+
+    const selectedOption = selectActual.options[selectActual.selectedIndex];
+    const valorSeleccionado = selectActual.value;
+    const textoSeccion = selectedOption.dataset.seccion;
+
+    // 1. Actualizamos AMBOS inputs de texto deshabilitados
+    document.querySelectorAll('.seccion-obtenida-display').forEach(input => {
+        input.value = textoSeccion;
+    });
+
+    // 2. Sincronizamos el valor del otro selector
+    if (otroSelect) {
+        otroSelect.value = valorSeleccionado;
+    }
+
+    // 3. Llamamos a la función para cargar la tabla de series
+    cargarSeries(); // O la función que corresponda
+}
