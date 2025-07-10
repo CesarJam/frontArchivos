@@ -1,5 +1,7 @@
 // Evento que se ejecuta cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", () => {
+
+
     const selectAnio = document.getElementById("selectAnioBusqueda");
     const selectSecciones = document.getElementById("selectSeccionesInventario");
     const anioActual = new Date().getFullYear();
@@ -22,18 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Función para cargar el inventario
-    const ejecutarBusqueda = () => {
-        const anioSeleccionado = selectAnio.value;
-        const seccionSeleccionada = selectSecciones.value;
-        if (anioSeleccionado && seccionSeleccionada) {
-            cargarTablaInventario(anioSeleccionado, seccionSeleccionada);
-            cargarTablaInventarioTurnado(anioSeleccionado, seccionSeleccionada);
-        }
-    };
 
-    // Eventos para ejecutar la búsqueda cuando se selecciona un valor
-    selectAnio.addEventListener("change", ejecutarBusqueda);
-    selectSecciones.addEventListener("change", ejecutarBusqueda);
+    if (selectAnio) selectAnio.addEventListener('change', actualizarVistasDeInventario);
+    if (selectSecciones) selectSecciones.addEventListener('change', actualizarVistasDeInventario);
+
 
     //aqui mandamos a limpiar el modal Inventario
     // Obtenemos la referencia a tu modal de Inventario por su ID
@@ -41,30 +35,111 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Nos aseguramos de que el modal exista en la página
     if (modalInventarioEl) {
-        
+
         // Escuchamos el evento 'show.bs.modal'
         // La función del listener es ASÍNCRONA para poder usar 'await' adentro
         modalInventarioEl.addEventListener('show.bs.modal', async (event) => {
-            
+
             // Justo antes de que el modal se muestre, ejecutamos la limpieza y carga de datos.
-            console.log('El modal de Inventario está a punto de abrirse, preparando contenido...');
-            
+            //console.log('El modal de Inventario está a punto de abrirse, preparando contenido...');
+
             // Usamos 'await' para asegurarnos de que toda la preparación (incluida la carga de series)
             // se complete antes de que el modal sea visible.
             await limpiarModalInventario();
         });
     }
 
+
+    // Asignación de evento para el botón de Agregar Áreas dentro del Modal de Inventario
+    const btnAgregarArea = document.getElementById("btnAgregarAreaModalInventario");
+    if (btnAgregarArea) { // Buena práctica: comprobar si el botón existe antes de asignarle un evento
+        btnAgregarArea.addEventListener("click", agregarElementoAListaAreasTurnadasModalInventario);
+    }
+
+    // Asignación de evento para el botón de Agregar Dependencias dentro del ModalInventario
+    const btnAgregarDependencia = document.getElementById("btnAgregarDependenciasModalInventario");
+    if (btnAgregarDependencia) {
+        btnAgregarDependencia.addEventListener("click", agregarElementoAListaDependenciaModalInventario);
+    }
+
+    //Manejo de toogle de años reserva dentro del Modal Inventario
+    // 1. Seleccionamos TODOS los radio buttons del grupo 'condicionesAcceso' por su atributo 'name'.
+    const radiosCondiciones = document.querySelectorAll('input[name="condicionesAcceso"]');
+
+    // 2. A cada uno de ellos, le añadimos un listener para el evento 'change'.
+    //    Este evento se dispara cuando la selección cambia.
+
+    radiosCondiciones.forEach(radio => {
+        radio.addEventListener('change', toggleAniosReserva);
+    });
+
+
+    // 3. Opcional pero recomendado: Llama a la función una vez al cargar la página
+    //    para asegurar que el campo tenga el estado inicial correcto.
+    toggleAniosReserva();
+    // Cargamos las Secciones de la pantalla princial
+    //document.addEventListener('DOMContentLoaded', cargarSeccionesInventario);
+    cargarSeccionesInventario();
+
+
+    //Fucionalidad el boton guardarInventarioExpediente
+    // Seleccionamos el botón "Guardar" del modal de inventario por su ID.
+    const btnGuardarInventario = document.getElementById('guardarBtnModalinventario');
+
+    // Buena práctica: comprobamos si el botón existe antes de añadir el evento.
+    if (btnGuardarInventario) {
+        // Le asignamos la función 'guardarInventario' al evento 'click'.
+        btnGuardarInventario.addEventListener('click', guardarInventario);
+    }
+
+    //Funcionalidad el boton modificarInventarioExpediente
+    // Seleccionamos el botón "Guardar" del modal de inventario por su ID.
+    const btnModificarInventario = document.getElementById('modificarBtnModalInventario');
+
+    // Buena práctica: comprobamos si el botón existe antes de añadir el evento.
+    if (btnModificarInventario) {
+        // Le asignamos la función 'guardarInventario' al evento 'click'.
+        btnModificarInventario.addEventListener('click', modificarInventario);
+    }
+
 });
+///CARGAR TABLAS
+/**
+ * Lee los valores actuales de los selectores de año y sección,
+ * y luego actualiza las tablas de Inventario y Turnados.
+ * Es la función central para refrescar los datos de esta sección.
+ */
+function actualizarVistasDeInventario() {
+    console.log("Iniciando actualización de las vistas de inventario...(actualizarVistasDeInventario()) OK");
+    const selectAnio = document.getElementById("selectAnioBusqueda");
+    const selectSecciones = document.getElementById("selectSeccionesInventario");
 
+    // Nos aseguramos de que los elementos existan antes de continuar
+    if (!selectAnio || !selectSecciones) {
+        console.error("No se encontraron los selectores de año o sección.");
+        return;
+    }
 
-// Cargamos las Secciones de la pantalla princial
-document.addEventListener('DOMContentLoaded', cargarSeccionesInventario);
+    // Obtenemos los valores en el momento exacto de la ejecución
+    const anioSeleccionado = selectAnio.value;
+    const seccionSeleccionada = selectSecciones.value;
+
+    // Validamos que se haya seleccionado una opción real y no el placeholder
+    if (anioSeleccionado && seccionSeleccionada && !selectAnio.options[selectAnio.selectedIndex].disabled) {
+        // Llamamos a las funciones que cargan los datos en las tablas
+        cargarTablaInventario(anioSeleccionado, seccionSeleccionada);
+        cargarTablaInventarioTurnado(anioSeleccionado, seccionSeleccionada);
+    } else {
+        console.log("No se ha seleccionado un año o sección válida. No se actualizan las tablas.");
+    }
+}
+
 
 /* Pestaña de inventario */
 async function cargarTablaInventario(anio, codigoSeccion) {
+    console.log("Función (cargarTablaInventario()) OK");
     const tbody = document.getElementById("tabla-inventario");
-    const url = `https://api-nijc7glupa-uc.a.run.app/inventario/consultaInventario/anio/${anio}/areaOrigen/${codigoSeccion}`;
+    const url = `https://api-nijc7glupa-uc.a.run.app/inventario/consultaInventario/anio/${anio}/areaDeRegistro/${codigoSeccion}`;
 
     tbody.innerHTML = `<tr><td colspan="7" class="text-center">Cargando inventario...</td></tr>`;
 
@@ -78,7 +153,7 @@ async function cargarTablaInventario(anio, codigoSeccion) {
             if (response.status === 404) {
                 // Intentamos leer el cuerpo del error para obtener el mensaje JSON.
                 const errorData = await response.json();
-                
+
                 // Si el cuerpo del error contiene el campo 'message', lo mostramos.
                 if (errorData && errorData.message) {
                     tbody.innerHTML = `<tr><td colspan="7" class="text-center">${errorData.message}</td></tr>`;
@@ -88,7 +163,7 @@ async function cargarTablaInventario(anio, codigoSeccion) {
                 }
                 return; // Salimos de la función, ya que manejamos el caso "no encontrado".
             }
-            
+
             // Para cualquier otro código de error (500, 403, etc.), lo consideramos un error real.
             throw new Error(`Error de red: ${response.status}`);
         }
@@ -156,6 +231,7 @@ async function cargarTablaInventario(anio, codigoSeccion) {
     }
 }
 function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
+    console.log("Función (crearFilaPrincipalInventario()) OK");
     const fila = document.createElement("tr");
     let filaClase = "fila-principal-inventario fila-principal";
 
@@ -172,6 +248,9 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
             <button class="btn btn-warning btn-sm btn-editar" title="Editar Registro">
                 <i class="bi bi-pencil"></i>
             </button>
+            <button class="btn btn-info btn-sm btn-NuevoMovimiento" title="NuevoMovimiento">
+                <i class="bi bi-pencil"></i>
+            </button>
             <button class="btn btn-danger btn-sm btn-eliminar" title="Eliminar Registro">
                 <i class="bi bi-trash"></i>
             </button>
@@ -180,6 +259,7 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
 
     // --- MEJORA: Manejo de eventos con addEventListener ---
     const btnEditar = fila.querySelector(".btn-editar");
+    const btnNuevoMovimiento = fila.querySelector(".btn-NuevoMovimiento");
     const btnEliminar = fila.querySelector(".btn-eliminar");
 
     // Guardar datos en los atributos data-* del botón
@@ -191,9 +271,19 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
     // Asignar el evento de click para editar
     btnEditar.addEventListener('click', (e) => {
         e.stopPropagation(); // Evita que se active el click de la fila
-        editarRegistroInventario(e.currentTarget.dataset.id);
+        //editarRegistroInventario(e.currentTarget.dataset.id);
+        prepararModalParaEditar(item.id);
+
     });
-    
+
+    // Asignar el evento de click para nuevo movimiento
+    btnNuevoMovimiento.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que se active el click de la fila
+        //editarRegistroInventario(e.currentTarget.dataset.id);
+        prepararModalParaMovimiento(item.id);
+
+    });
+
     // Asignar el evento de click para eliminar
     btnEliminar.addEventListener('click', (e) => {
         e.stopPropagation(); // Evita que se active el click de la fila
@@ -205,6 +295,7 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
 }
 
 function crearFilaDetalleInventario(item, historial) {
+    console.log("Función (crearFilaDetalleInventario()) OK");
     const fila = document.createElement("tr");
     fila.className = 'fila-detalle-inventario fila-detalle';
 
@@ -358,14 +449,14 @@ async function cargarTablaInventarioTurnado(anio, codigoSeccion) {
         // --- FIN DE LA CORRECCIÓN ---
 
         const datos = await response.json();
-        tbody.innerHTML = ""; 
+        tbody.innerHTML = "";
 
         // Esta validación se mantiene por si el API devuelve 200 OK con un arreglo vacío []
         if (!Array.isArray(datos) || datos.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-center">No hay registros de documentos turnados a ${codigoSeccion} para el año ${anio}</td></tr>`;
             return;
         }
-        
+
         datos.sort((a, b) => {
             const numA = parseInt(a.numeroExpediente.match(/\d+$/)?.[0] || 0);
             const numB = parseInt(b.numeroExpediente.match(/\d+$/)?.[0] || 0);
@@ -406,7 +497,7 @@ async function cargarTablaInventarioTurnado(anio, codigoSeccion) {
             fragmento.appendChild(filaPrincipal);
             fragmento.appendChild(filaDetalle);
         });
-        
+
         tbody.appendChild(fragmento);
 
     } catch (error) {
@@ -447,7 +538,7 @@ function crearFilaPrincipalTurnado(item, tipoUltimoMovimiento) {
     btnEditar.dataset.id = item.id;
     btnEditar.addEventListener('click', (e) => {
         e.stopPropagation(); // Evita que el clic se propague a la fila
-        editarRegistroInventario(e.currentTarget.dataset.id);
+        //editarRegistroInventario(e.currentTarget.dataset.id);
     });
 
     const btnEliminar = fila.querySelector(".btn-eliminar");
@@ -509,7 +600,7 @@ function crearFilaDetalleTurnado(item, historial) {
       </div>
     </div>
     `;
-    
+
     // Se reensambla el HTML completo para claridad
     const detallesCompletos = `
     <div class="p-3 border rounded">
@@ -544,239 +635,318 @@ function crearFilaDetalleTurnado(item, historial) {
     return fila;
 }
 
+/**
+ * Prepara y muestra el modal para EDITAR un expediente existente.
+ * Versión robusta que utiliza el evento 'shown.bs.modal' para garantizar la sincronización.
+ */
+async function prepararModalParaEditar(expedienteId) {
+    console.log("Función (prepararModalParaEditar())");
+    const modalEl = document.getElementById('modalInventario');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-
-//funcion de editar series
-//Carga los datos al modal para editarlo
-async function editarRegistroInventario(idInventario) {
-    try {
-        limpiarUIAreasModal();
-        limpiarUIDependencias();
-        //llenarSelectAreaTurnado();
-        // Obtener los datos del inventario específico
-        const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${idInventario}`);
-        const inventario = await response.json();
-        // Llenar el formulario con los datos obtenidos
-        document.getElementById('idInventario').value = inventario.id;
-        document.getElementById('numeroExpedienteModalInventario').value = inventario.numeroExpediente || '';
-        document.getElementById('asuntoModalInventario').value = inventario.asunto || '';
-        document.getElementById('dependenciaModalInventario').value = inventario.dependencias;
-        //Status Creado
-        document.getElementById('tipoModalInventario').value = inventario.status.creado.tipo || 'No aplica';
-        document.getElementById('statusCreadoFechaModalInventario').value = inventario.status.creado.fecha || '';
-        document.getElementById('areaCreadoModalInventario').value = inventario.status.creado.areaCreado;
-        areas = inventario.status.creado.areaTurnado;
-        const lista = document.getElementById("listaAreasTurnadas");
-        lista.innerHTML = ""; // Limpiar lista antes de agregar elementos
-        areas.forEach(area => {
-            if (area) {
-                areasSeleccionadas.push({ codigo: area, nombre: area });
-                actualizarAreasTurnadasInventarioUI();
+    // 1. Creamos un listener que se ejecutará UNA SOLA VEZ, justo cuando el modal se haya mostrado.
+    //    Usamos { once: true } para que el listener se elimine automáticamente después de ejecutarse.
+    modalEl.addEventListener('shown.bs.modal', async function handler() {
+        try {
+            // 2. Preparamos el modal (título, botones) ANTES de mostrarlo.
+            document.getElementById('modalRegistroInventario').textContent = 'Editar Expediente';
+            document.getElementById('guardarBtnModalinventario').classList.add('d-none');
+            document.getElementById('modificarBtnModalInventario').classList.remove('d-none');
+            // 3. AHORA, con el modal ya visible, obtenemos los datos.
+            const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${expedienteId}`);
+            if (!response.ok) {
+                throw new Error('No se pudo cargar la información del expediente.');
             }
-        });
-        document.getElementById('statusCreadoObservacionesModalInventario').value = inventario.status.creado.observaciones || '';
-        //aqui agregar los datos en variables
-        //usuario
-        // Obtener la hora del inventario
-        document.getElementById('statusCreadoHoraModalInventario').value = inventario.status.creado.hora;
+            const data = await response.json();
+            //console.log("Datos recibidos, rellenando formulario:", data);
+            // 4. Y rellenamos el formulario. Ahora sí funcionará.
+            // Usamos el operador '??' para poner un string vacío si el dato es null/undefined.
+            document.getElementById('idInventario').value = data.id ?? '';
+            document.getElementById('numeroExpedienteModalInventario').value = data.numeroExpediente ?? '';
+            document.getElementById('asuntoModalInventario').value = data.asunto ?? '';
 
-        //Status Trámite
-        document.getElementById('statusTramiteFechaModalInventario').value = inventario.status.tramite.fecha || '';
-        document.getElementById('statusTramiteHoraModalInventario').value = inventario.status.tramite.hora;
-        document.getElementById('statusTramiteObservacionesModalInventario').value = inventario.status.tramite.observaciones || '';
-        //aqui agregar los datos en variables
-        //usuario
+            if (data.datosGenerales) {
+                document.getElementById('numeroFojasModalInventario').value = data.datosGenerales.numeroFojas ?? '';
+                document.getElementById('caracterComunicacionModal').value = data.datosGenerales.caracterComunicacion ?? 'No aplica';
+                document.getElementById('inmuebleModalInventario').value = data.datosGenerales.inmueble ?? '';
+                document.getElementById('ubicacionModalInventario').value = data.datosGenerales.ubicacion ?? '';
 
-        document.getElementById('statusConcluidoFechaModalInventario').value = inventario.status.concluido.fecha || '';
-        document.getElementById('statusConcluidoHoraModalInventario').value = inventario.status.concluido.hora;
-        document.getElementById('statusConcluidoObservacionesModalInventario').value = inventario.status.concluido.observaciones || '';
-        //aqui agregar los datos en variables
-        //usuario
+                // Lógica para checkboxes y radios...
+                const soportes = data.datosGenerales.soporteDocumental || "";
+                document.getElementById('soportePapelModalInventario').checked = soportes.includes('Papel');
+                document.getElementById('soporteElectronicoModalInventario').checked = soportes.includes('Electrónico');
 
-        document.getElementById('numeroFojasModalInventario').value = inventario.numeroFojas || '';
+                //condiciones de acceso
+                // --- Rellenar radio buttons (ej. Condiciones de Acceso) ---
+                // Esta es la versión robusta y corregida.
+                if (data.datosGenerales.condicionesAcceso) {
 
-        // Selección de soportes documentales
-        marcarSoportes(inventario.soporteDocumental);
+                    // 1. Obtenemos TODOS los radio buttons del grupo 'condicionesAcceso'
+                    const radios = document.querySelectorAll('input[name="condicionesAcceso"]');
 
-        // Selección de condiciones de acceso
-        const condicionesAcceso = inventario.condicionesAcceso || 'Pública';
-        document.getElementById('condicionPublicaModalInventario').checked = condicionesAcceso === 'Pública';
-        document.getElementById('condicionReservadaModalInventario').checked = condicionesAcceso === 'Reservada';
-        document.getElementById('condicionConfidencialModalInventario').checked = condicionesAcceso === 'Confidencial';
+                    // 2. Recorremos cada uno de ellos
+                    radios.forEach(radio => {
 
-        document.getElementById('aniosReservaModalInventario').value = inventario.aniosReserva || '0';
+                        // 3. Comparamos el 'value' de cada radio button con el dato que viene de la base de datos
+                        if (radio.value === data.datosGenerales.condicionesAcceso) {
 
-        // Tradición documental
-        document.getElementById('soporteOriginalModalInventario').checked = inventario.tradicionDocumental?.includes("Original") || false;
-        document.getElementById('soporteCopiaModalInventario').checked = inventario.tradicionDocumental?.includes("Copia") || false;
+                            // 4. Si coinciden, lo marcamos como seleccionado (checked)
+                            radio.checked = true;
+                        }
+                    });
+                }
 
-        document.getElementById('inmuebleModalInventario').value = inventario.inmueble || '';
-        document.getElementById('ubicacionModalInventario').value = inventario.ubicacion || '';
+                toggleAniosReserva();
+                document.getElementById('aniosReservaModalInventario').value = data.datosGenerales.aniosReserva ?? '0';
+                // 1. LLAMAMOS Y ESPERAMOS a que el selector se llene.
+                //await actualizarSelectSeriesSubseriesModalInventario();//ya lo hacemos desde limpiarModal
 
-        document.getElementById('codigoSerieInventario').value = inventario.codigoSubserie || '';
-        document.getElementById('nombreSerieInventario').value = inventario.nombreSerie || '';
-        document.getElementById('valorDocumentalSerieInventario').value = inventario.valorDocumental || '';
-        document.getElementById('aniosTramite').value = inventario.aniosTramite || '';
-        document.getElementById('aniosConcentracion').value = inventario.aniosConcentracion || '';
+                // 2. Asignamos el valor guardado.
+                const codigoGuardado = data.subserie?.codigoSubserie;
+                const selectSubseries = document.getElementById('selectSeriesSubseries');
 
-        //habilita el boton editar y oculta el boton guardar
-        const buttonGuardar = document.getElementById('guardarBtnModalinventario');
-        const buttonModificar = document.getElementById('modificarBtnModalInventario');
-        buttonGuardar.classList.add('d-none');//ocultar boton de Guardar 
-        buttonModificar.classList.remove('d-none');//Mostrar boton de modificar
+                if (codigoGuardado) {
+                    selectSubseries.value = codigoGuardado;
 
-        // Abrir el modal
-        const modal = new bootstrap.Modal(document.getElementById('modalInventario'));
-        modal.show();
+                    // 3. ¡LA CLAVE! Disparamos manualmente el evento 'change'.
+                    //    Esto le dice a tu otro código: "¡Oye, el valor ha cambiado, actualiza los demás campos!".
+                    selectSubseries.dispatchEvent(new Event('change'));
+                }
+            }
 
-    } catch (error) {
-        console.error('Error al cargar el inventario para editar:', error);
-        alert('Error al cargar el inventario para editar');
-    }
+            // Rellenar listas dinámicas
+            dependenciasSeleccionadas = data.listaDeDependencias?.map(nombre => ({ nombre })) || [];
+            actualizarListaDependenciaModalInventario();
+
+            // ... y la lógica para las demás listas ...
+
+            // ==================================================================
+            // INICIO: RELLENAR DATOS DEL REGISTRO INICIAL
+            // ==================================================================
+            // 1. Obtenemos de forma segura el primer objeto del historial
+            const primerMovimiento = data.historialMovimientos?.[0];
+
+            // 2. Nos aseguramos de que el historial exista antes de continuar
+            if (primerMovimiento) {
+                // 3. Rellenamos los campos de texto simples (fecha, hora, observaciones)
+                document.getElementById('statusCreadoFechaModalInventario').value = primerMovimiento.fecha ?? '';
+                document.getElementById('statusCreadoHoraModalInventario').value = primerMovimiento.hora ?? '';
+                document.getElementById('statusCreadoObservacionesModalInventario').value = primerMovimiento.observaciones ?? '';
+
+                // 4. Rellenamos la lista de "Áreas Destino" (la parte más elaborada)
+                //console.log(primerMovimiento.areaDestino);
+                //listaAreasTurnadasModalInventario.add(primerMovimiento.areaDestino);
+                areasSeleccionadas = primerMovimiento.areaDestino.map(codigo => {
+                    return { codigo: codigo, nombre: codigo };
+                });
+                actualizarListaAreasTurnadasModalInventario();//dejarlo Este acttualiza lo que trae la peticion 
+            }
+
+        } catch (error) {
+            console.error("Error al rellenar el modal para edición:", error);
+            alert("No se pudo cargar la información del expediente para editar.");
+            modal.hide(); // Ocultamos el modal si hay un error
+        }
+    }, { once: true });
+
+    // 5. Finalmente, damos la orden de mostrar el modal.
+    modal.show();
 }
 
-//guardar las modificaciones mediante el update
+/**
+ * Recolecta los datos del modal de edición, los envía al endpoint PATCH
+ * para actualizar un expediente existente.
+ */
 async function modificarInventario() {
+    console.log("Función (modificarInventario)");
+    // 1. Obtenemos el ID del expediente del campo oculto
+    const expedienteId = document.getElementById('idInventario').value;
+
+    if (!expedienteId) {
+        alert("Error: No se encontró el ID del expediente a modificar.");
+        return;
+    }
+    console.log(expedienteId);
+    // 2. Recolectamos TODOS los datos del formulario (esta lógica es idéntica a la de guardar)
+    console.log("Recolectando datos para modificar...");
+    
+    // --- Datos de Identificación ---
+    const numeroExpediente = document.getElementById('numeroExpedienteModalInventario').value;
+    const asunto = document.getElementById('asuntoModalInventario').value;
+    console.log(asunto);
+    //const areaDeRegistro = document.getElementById('areaCreadoModalInventario').value; // Asumiendo que este campo oculto tiene el área de registro
+
+    // --- Dependencias y Áreas ---
+    // (Asumiendo que tus arrays globales 'dependenciasSeleccionadas' y 'areasSeleccionadas' están actualizados por la interacción del usuario en el modal)
+    // --- Dependencias (asumiendo que tienes un array 'dependenciasSeleccionadas') ---
+    const listaDeDependencias = dependenciasSeleccionadas.map(dep => dep.nombre);
+
+    // --- Metadatos del Expediente ---
+    const caracterComunicacion = document.getElementById('caracterComunicacionModal').value;
+    const numeroFojas = document.getElementById('numeroFojasModalInventario').value;
+
+    // Lógica para los checkboxes de Soporte
+    const soportes = [];
+    if (document.getElementById('soportePapelModalInventario').checked) soportes.push('Papel');
+    if (document.getElementById('soporteElectronicoModalInventario').checked) soportes.push('Electrónico');
+    const soporteDocumental = soportes.join(' y ') || 'No especificado';
+
+    // Lógica para los radio buttons de Tradición
+    const tradicionDocumental = document.querySelector('input[name="tradicionDocumental"]:checked').value;
+
+    // Lógica para los radio buttons de Acceso
+    const condicionesAcceso = document.querySelector('input[name="condicionesAcceso"]:checked').value;
+    const aniosReserva = document.getElementById('aniosReservaModalInventario').value;
+
+    const inmueble = document.getElementById('inmuebleModalInventario').value;
+    const ubicacion = document.getElementById('ubicacionModalInventario').value;
+
+    // --- Clasificación Archivística (Subserie) ---
+    // Asumimos que al seleccionar una subserie, guardas sus datos en un objeto
+    // Por ejemplo: let subserieSeleccionada = { codigo: '...', nombre: '...' };
+    const subserie = {
+        codigoSubserie: document.getElementById('codigoSerieModalInventario').value,
+        nombreSubserie: document.getElementById('nombreSerieModalInventario').value,
+        valorDocumental: document.getElementById('valorDocumentalSerieModalInventario').value,
+        aniosTramite: document.getElementById('aniosTramiteModalInventario').value,
+        aniosConcentracion: document.getElementById('aniosConcentracionModalInventario').value
+    };
+
+    // --- Datos del Registro Inicial ---
+    // Asumimos que tienes un array 'areasSeleccionadas' para las áreas a turnar
+    const areaDestino = areasSeleccionadas.map(area => area.codigo);
+    const fecha = document.getElementById('statusCreadoFechaModalInventario').value;
+    const hora = document.getElementById('statusCreadoHoraModalInventario').value;
+    const observaciones = document.getElementById('statusCreadoObservacionesModalInventario').value;
+    const usuario = "usuario.logueado"; // Aquí deberías obtener el usuario real
+    
+    // --- Ensamblamos el Objeto JSON para la actualización ---
+    // NOTA: Para un PATCH, podrías enviar solo los campos que cambiaron,
+    // pero enviar el objeto completo es más simple desde el formulario y también funciona.
+    // --- Construimos el Objeto JSON Final para la actualización ---
+    const expedienteActualizado = {
+        numeroExpediente,
+        asunto,
+        listaDeDependencias,
+        datosGenerales: {
+            caracterComunicacion,
+            numeroFojas,
+            soporteDocumental,
+            condicionesAcceso,
+            aniosReserva: (condicionesAcceso === "Reservada" || condicionesAcceso === "Confidencial") ? aniosReserva : "0",
+            tradicionDocumental,
+            inmueble,
+            ubicacion
+        },
+        subserie,
+        registro: {
+            areaDestino,
+            fecha,
+            hora,
+            observaciones,
+            usuario
+        }
+    };
+
+    console.log("Enviando datos de modificación:", expedienteActualizado);
+
+    // 3. Enviamos los datos a la API con el método PATCH y el ID en la URL
     try {
-        // Recopilar valores del formulario
-        const formData = {
-            id: document.getElementById('idInventario').value,
-            numeroExpediente: document.getElementById("numeroExpedienteModalInventario").value.trim(),
-            asunto: document.getElementById("asuntoModalInventario").value.trim(),
-            dependencias: document.getElementById("dependenciaModalInventario").value.trim(),
-            status: {
-                creado: {
-                    tipo: document.getElementById("tipoModalInventario").value.trim(),
-                    fecha: document.getElementById("statusCreadoFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusCreadoHoraModalInventario").value.trim(),
-                    areaCreado: document.getElementById('areaCreadoModalInventario').value.trim(),//lo obtenemos del formulario
-                    areaTurnado: (areasSeleccionadas && areasSeleccionadas.length > 0)
-                        ? areasSeleccionadas.map(area => area.codigo)
-                        : ["Sin asignar"], // Listado de áreas seleccionadas
-                    observaciones: document.getElementById("statusCreadoObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                },
-                tramite: {
-                    fecha: document.getElementById("statusTramiteFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusTramiteHoraModalInventario").value.trim() || '00:00', //falta agregar en el formulario
-                    observaciones: document.getElementById("statusTramiteObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                },
-                concluido: {
-                    fecha: document.getElementById("statusConcluidoFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusConcluidoHoraModalInventario").value.trim() || '12:00', //falta agregar en el formulario
-                    observaciones: document.getElementById("statusConcluidoObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                }
+        const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${expedienteId}`, { // Asegúrate que esta sea la ruta correcta a tu API
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            numeroFojas: document.getElementById("numeroFojasModalInventario").value.trim(),
-            inmueble: document.getElementById("inmuebleModalInventario").value.trim(),
-            ubicacion: document.getElementById("ubicacionModalInventario").value.trim(),
-            codigoSubserie: document.getElementById("codigoSerieInventario").value.trim(),
-            nombreSerie: document.getElementById("nombreSerieInventario").value.trim(),
-            valorDocumental: document.getElementById("valorDocumentalSerieInventario").value.trim(),
-            aniosTramite: document.getElementById("aniosTramite").value.trim(),
-            aniosConcentracion: document.getElementById("aniosConcentracion").value.trim()
-        };
-
-        // Validar campos obligatorios
-        for (const [key, value] of Object.entries(formData)) {
-            if (!value) {
-                console.error(`Error: El campo "${key}" es obligatorio.`);
-                alert(`El campo "${key}" es obligatorio.`);
-                return;
-            }
-        }
-
-        // Obtener valores de Soporte Documental (Checkboxes)
-        formData.soporteDocumental = [
-            document.getElementById("soportePapelModalInventario").checked ? "Papel" : null,
-            document.getElementById("soporteElectronicoModalInventario").checked ? "Electrónico" : null
-        ].filter(Boolean).join("/");
-
-        if (!formData.soporteDocumental) {
-            alert("Debe seleccionar al menos un tipo de Soporte Documental.");
-            return;
-        }
-
-        // Obtener valores de Tradición Documental (Checkboxes)
-        formData.tradicionDocumental = [
-            document.getElementById("soporteOriginalModalInventario").checked ? "Original" : null,
-            document.getElementById("soporteCopiaModalInventario").checked ? "Copia" : null
-        ].filter(Boolean).join("/");
-
-        if (!formData.tradicionDocumental) {
-            alert("Debe seleccionar al menos un tipo de Tradición Documental.");
-            return;
-        }
-
-        // Obtener valor de Condiciones de Acceso (Radio buttons)
-        formData.condicionesAcceso = document.querySelector('input[name="condicionesAcceso"]:checked')?.value || "";
-
-        // Si es "Reservada", obtener años de reserva
-        formData.aniosReserva = formData.condicionesAcceso === "Reservada"
-            ? document.getElementById("aniosReservaModalInventario").value.trim()
-            : "0";
-
-        // Enviar solicitud PUT
-        const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${formData.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(expedienteActualizado)
         });
 
         if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al modificar el expediente.');
         }
 
-        const result = await response.json();
-        console.log("Registro exitoso:", result);
-
+        //const resultado = await response.json();
+        //console.log('Expediente modificado con éxito:', resultado);
         // Mostrar modal de éxito
         new bootstrap.Modal(document.getElementById('successModal')).show();
-
-        // Cerrar modal de inventario
-        bootstrap.Modal.getInstance(document.getElementById('modalInventario'))?.hide();
-
-        //ACTUALIZAR TABLA
-        seccionSeleccionadoInventaerio = document.getElementById("selectSeccionesInventario").value.trim();
-        anioSeleccionadoInventaerio = document.getElementById("selectAnioBusqueda").value.trim(),
-            cargarTablaInventario(anioSeleccionadoInventaerio, seccionSeleccionadoInventaerio);
-        ///cargarTablaInventarioTurnado(anioSeleccionadoInventaerio, seccionSeleccionadoInventaerio);
+        
+        // 4. Cerramos el modal y refrescamos la tabla principal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalInventario'));
+        modal.hide();
+        
+        actualizarVistasDeInventario(); // La función que creamos para recargar los datos
+        //alert('Expediente modificado con éxito.');
 
     } catch (error) {
-        console.error("Error al guardar inventario:", error);
-        alert("Hubo un problema al guardar el inventario. Inténtelo nuevamente.");
+        console.error('Fallo al enviar el formulario de modificación:', error);
+        alert(`Error: ${error.message}`);
     }
 }
 
-// Ejecutar la función al abrir el modal (llena el campo inventario)
-document.getElementById("modalRegistroInventario").addEventListener("show.bs.modal", obtenerUltimoNumeroExpediente);
+/**
+ * Estructura del modal de nuevo movimiento
+ */
+
+/**
+ * Prepara y abre el modal para añadir un nuevo movimiento.
+ * @param {string} expedienteId - El ID del expediente a actualizar.
+ * @param {string} tipoDeMovimiento - El tipo de movimiento ("tramite" o "concluido").
+ */
+function prepararModalParaMovimiento(expedienteId, tipoDeMovimiento) {
+    // Obtenemos el modal de Bootstrap
+    const modalEl = document.getElementById('modalNuevoMovimiento');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    // Limpiamos el formulario
+    document.getElementById('formNuevoMovimiento').reset();
+
+    // Configuramos los valores ocultos
+    document.getElementById('movimientoExpedienteId').value = expedienteId;
+    document.getElementById('movimientoTipo').value = tipoDeMovimiento;
+
+    // Cambiamos el título del modal dinámicamente
+    const modalTitle = document.getElementById('modalMovimientoLabel');
+    if (tipoDeMovimiento === 'tramite') {
+        modalTitle.textContent = 'Registrar Trámite';
+    } else if (tipoDeMovimiento === 'concluido') {
+        modalTitle.textContent = 'Concluir Expediente';
+    }
+
+    // Mostramos el modal
+    modal.show();
+}
+
+
 
 // Deshabilitar/habilitar campo de años de reserva
 function toggleAniosReserva() {
+    console.log("Función (toggleAniosReserva) OK");
     let reservadaSeleccionada = document.getElementById("condicionReservadaModalInventario").checked;
-    let campoAniosReserva = document.getElementById("aniosReservaModalInventario");
+
+    // ¡CORRECCIÓN! Apuntamos al DIV contenedor, no solo al input.
+    let contenedorCampo = document.getElementById("campoAniosReservaModalInventario");
 
     if (reservadaSeleccionada) {
-        document.getElementById("aniosReservaModalInventario").value = "0";
-        campoAniosReserva.style.display = "block";
-
+        // Mostramos el contenedor completo (label + input)
+        contenedorCampo.style.display = "block";
+        document.getElementById("aniosReservaModalInventario").value = "0"; // Mantenemos tu lógica de resetear a 0
     } else {
-        campoAniosReserva.style.display = "none";
-        document.getElementById("aniosReservaModalInventario").value = ""; // Limpiar el campo
+        // Ocultamos el contenedor completo
+        contenedorCampo.style.display = "none";
+        document.getElementById("aniosReservaModalInventario").value = ""; // Mantenemos tu lógica de limpiar el campo
     }
 }
 
 // Cargar opciones del dropdown inicial de las Secciones
 async function cargarSeccionesInventario() {
+    console.log("Función (cargarSeccionesInventario()) OK");
     try {
         const response = await fetch('https://api-nijc7glupa-uc.a.run.app/secciones/cuadroGeneral');
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
         const secciones = await response.json();
         const select = document.getElementById('selectSeccionesInventario');
-        const selectModal = document.getElementById('statusCreadoAreaCreadoModalInventario');
+        const selectModal = document.getElementById('statusCreadoAreaCreadoModalInventario');//carga las secciones en el modal de Inventario
 
         const placeholder = '<option selected disabled>-- Elige una sección --</option>';
         select.innerHTML = placeholder;
@@ -806,38 +976,32 @@ document.getElementById('selectSeccionesInventario').addEventListener('change', 
  * VERSIÓN DEFINITIVA Y PRECISA
  * Carga las series y subseries, manejando la respuesta específica de la API cuando no hay datos.
  */
-async function cargarSeriesInventario() {
+async function actualizarSelectSeriesSubseriesModalInventario() {
+    console.log("Funcion (actualizarSelectSeriesSubseriesModalInventario()) OK");
     try {
         const selectSecciones = document.getElementById('selectSeccionesInventario');
         const codigoSeccion = selectSecciones.value;
         const selectSeries = document.getElementById('selectSeriesSubseries');
         //
-        console.log("el codigo seleccionado es -->"+codigoSeccion);
+        //console.log("el codigo seleccionado es -->" + codigoSeccion);
         ///
         if (!codigoSeccion) {
             selectSeries.innerHTML = '<option selected disabled>-- Primero selecciona una sección --</option>';
             return;
         }
-
         const url = `https://api-nijc7glupa-uc.a.run.app/series/series/codigoSeccion/${codigoSeccion}`;
         const response = await fetch(url);
-
         if (!response.ok) {
             throw new Error(`Error HTTP al buscar series: ${response.status}`);
         }
-
         const apiData = await response.json();
-
         if (apiData && apiData.message && Array.isArray(apiData.data)) {
             selectSeries.innerHTML = `<option selected disabled>-- ${apiData.message} --</option>`;
             return;
         }
-
         const series = Array.isArray(apiData) ? apiData : [apiData];
-
         selectSeries.innerHTML = '<option value="" selected disabled>-- Selecciona una subserie --</option>';
         const datosSeriesSubseries = {}; // Este objeto lo seguiremos usando igual
-
         // --- INICIO DE LA MODIFICACIÓN CON <optgroup> ---
         series.forEach(serie => {
             if (!serie || !serie.id) return;
@@ -862,12 +1026,12 @@ async function cargarSeriesInventario() {
                     const optionSubserie = document.createElement('option');
                     optionSubserie.value = subserie.id;
                     optionSubserie.textContent = `📄 ${subserie.id} - ${subserie.nombre}`;
-                    
+
                     // Añadimos la opción de la subserie DENTRO del optgroup
                     optgroup.appendChild(optionSubserie);
                 });
             }
-            
+
             // Finalmente, añadimos el grupo completo (con sus subseries) al select
             selectSeries.appendChild(optgroup);
         });
@@ -880,16 +1044,16 @@ async function cargarSeriesInventario() {
             const data = datosSeriesSubseries[selectedId];
 
             if (data) {
-                document.getElementById('codigoSerieInventario').value = data.id;
-                document.getElementById('nombreSerieInventario').value = data.nombre;
-                document.getElementById('valorDocumentalSerieInventario').value = data.valoresDocumentales;
-                document.getElementById('aniosTramite').value = data.aniosTramite;
-                document.getElementById('aniosConcentracion').value = data.aniosConcentracion;
+                document.getElementById('codigoSerieModalInventario').value = data.id;
+                document.getElementById('nombreSerieModalInventario').value = data.nombre;
+                document.getElementById('valorDocumentalSerieModalInventario').value = data.valoresDocumentales;
+                document.getElementById('aniosTramiteModalInventario').value = data.aniosTramite;
+                document.getElementById('aniosConcentracionModalInventario').value = data.aniosConcentracion;
             }
         });
 
     } catch (error) {
-        console.error('Error final en cargarSeriesInventario:', error);
+        console.error('Error final en actualizarSelectSeriesSubseriesModalInventario:', error);
         const selectSeries = document.getElementById('selectSeriesSubseries');
         if (selectSeries) {
             selectSeries.innerHTML = '<option selected disabled>-- Error al cargar series --</option>';
@@ -899,15 +1063,15 @@ async function cargarSeriesInventario() {
 
 // 1. Convertimos la función a 'async' para poder usar 'await'.
 async function limpiarModalInventario() {
-    
+    console.log("Función (limpiarModalInventario()) OK");
     // 2. Mantenemos toda tu lógica original para limpiar y preparar el modal.
-    console.log("Limpiando el modal y restableciendo campos...");
+    //console.log("Limpiando el modal y restableciendo campos...");
     document.getElementById('formularioInventario').reset();
     obtenerUltimoNumeroExpediente();
-    limpiarUIAreasModal();
-    limpiarUIDependencias();
+    limpiarListaAreasTurnadasModalInventario();
+    limpiarListaDependenciaModalInventario();
     //deshabilitarCamposStatus();
-    
+
     const buttonGuardar = document.getElementById('guardarBtnModalinventario');
     const buttonModificar = document.getElementById('modificarBtnModalInventario');
     buttonGuardar.classList.remove('d-none'); // Mostrar botón de Guardar
@@ -916,13 +1080,10 @@ async function limpiarModalInventario() {
     // 3. Añadimos la llamada asíncrona para cargar las series.
     //    Usamos try...catch para manejar cualquier error durante la carga.
     try {
-        console.log("Iniciando la carga de series y subseries...");
-        
+        //console.log("Iniciando la carga de series y subseries...");
         // Llamamos a la función y esperamos a que termine antes de continuar.
-        await cargarSeriesInventario(); 
-        
-        console.log("Las series y subseries se cargaron correctamente.");
-
+        await actualizarSelectSeriesSubseriesModalInventario();
+        //console.log("Las series y subseries se cargaron correctamente.");
     } catch (error) {
         console.error("Falló la carga de datos para el modal:", error);
         // Aquí podrías mostrar una alerta al usuario si algo sale mal.
@@ -931,123 +1092,117 @@ async function limpiarModalInventario() {
 }
 
 // Registra lo que se capturo del modal
+// Esta función se ejecuta cuando el usuario hace clic en "Guardar"
 async function guardarInventario() {
+    console.log("Función (guardarInventario()) OK");
+    // Recolectamos los datos del formulario del modal
+
+    // --- Datos de Identificación ---
+    const numeroExpediente = document.getElementById('numeroExpedienteModalInventario').value;
+    const asunto = document.getElementById('asuntoModalInventario').value;
+
+    // Lo obtenemos del select de Inventario
+    const areaDeRegistro = document.getElementById('selectSeccionesInventario').value;
+
+    // --- Dependencias (asumiendo que tienes un array 'dependenciasSeleccionadas') ---
+    const listaDeDependencias = dependenciasSeleccionadas.map(dep => dep.nombre);
+
+    // --- Metadatos del Expediente ---
+    const caracterComunicacion = document.getElementById('caracterComunicacionModal').value;
+    const numeroFojas = document.getElementById('numeroFojasModalInventario').value;
+
+    // Lógica para los checkboxes de Soporte
+    const soportes = [];
+    if (document.getElementById('soportePapelModalInventario').checked) soportes.push('Papel');
+    if (document.getElementById('soporteElectronicoModalInventario').checked) soportes.push('Electrónico');
+    const soporteDocumental = soportes.join(' y ') || 'No especificado';
+
+    // Lógica para los radio buttons de Tradición
+    const tradicionDocumental = document.querySelector('input[name="tradicionDocumental"]:checked').value;
+
+    // Lógica para los radio buttons de Acceso
+    const condicionesAcceso = document.querySelector('input[name="condicionesAcceso"]:checked').value;
+    const aniosReserva = document.getElementById('aniosReservaModalInventario').value;
+
+    const inmueble = document.getElementById('inmuebleModalInventario').value;
+    const ubicacion = document.getElementById('ubicacionModalInventario').value;
+
+    // --- Clasificación Archivística (Subserie) ---
+    // Asumimos que al seleccionar una subserie, guardas sus datos en un objeto
+    // Por ejemplo: let subserieSeleccionada = { codigo: '...', nombre: '...' };
+    const subserie = {
+        codigoSubserie: document.getElementById('codigoSerieModalInventario').value,
+        nombreSubserie: document.getElementById('nombreSerieModalInventario').value,
+        valorDocumental: document.getElementById('valorDocumentalSerieModalInventario').value,
+        aniosTramite: document.getElementById('aniosTramiteModalInventario').value,
+        aniosConcentracion: document.getElementById('aniosConcentracionModalInventario').value
+    };
+
+    // --- Datos del Registro Inicial ---
+    // Asumimos que tienes un array 'areasSeleccionadas' para las áreas a turnar
+    const areaDestino = areasSeleccionadas.map(area => area.codigo);
+    const fecha = document.getElementById('statusCreadoFechaModalInventario').value;
+    const hora = document.getElementById('statusCreadoHoraModalInventario').value;
+    const observaciones = document.getElementById('statusCreadoObservacionesModalInventario').value;
+    const usuario = "usuario.logueado"; // Aquí deberías obtener el usuario real
+
+    // --- Construimos el Objeto JSON Final ---
+    const expedienteParaEnviar = {
+        numeroExpediente,
+        asunto,
+        areaDeRegistro,
+        listaDeDependencias,
+        datosGenerales: {
+            caracterComunicacion,
+            numeroFojas,
+            soporteDocumental,
+            condicionesAcceso,
+            aniosReserva: (condicionesAcceso === "Reservada" || condicionesAcceso === "Confidencial") ? aniosReserva : "0",
+            tradicionDocumental,
+            inmueble,
+            ubicacion
+        },
+        subserie,
+        registro: {
+            areaDestino,
+            fecha,
+            hora,
+            observaciones,
+            usuario
+        }
+    };
+    // --- Enviamos a la API ---
     try {
-        const dependenciaSelect = document.getElementById("dependenciaModalInventario").value.trim();
-        console.log("dependencia es " + dependenciaSelect);
-        // Recopilar valores del formulario
-        const formData = {
-            numeroExpediente: document.getElementById("numeroExpedienteModalInventario").value.trim(),
-            asunto: document.getElementById("asuntoModalInventario").value.trim(),
-            dependencias: document.getElementById("dependenciaModalInventario").value.trim(),
-            status: {
-                creado: {
-                    tipo: document.getElementById("tipoModalInventario").value.trim(),
-                    fecha: document.getElementById("statusCreadoFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusCreadoHoraModalInventario").value.trim(),
-                    areaCreado: document.getElementById('selectSeccionesInventario').value.trim(),//lo obtenemos desde la principal
-                    areaTurnado: (areasSeleccionadas && areasSeleccionadas.length > 0)
-                        ? areasSeleccionadas.map(area => area.codigo)
-                        : [""], // Listado de áreas seleccionadas
-                    observaciones: document.getElementById("statusCreadoObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                },
-                tramite: {
-                    fecha: document.getElementById("statusTramiteFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusTramiteHoraModalInventario").value.trim() || '00:00', //falta agregar en el formulario
-                    observaciones: document.getElementById("statusTramiteObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                },
-                concluido: {
-                    fecha: document.getElementById("statusConcluidoFechaModalInventario").value.trim(),
-                    hora: document.getElementById("statusConcluidoHoraModalInventario").value.trim() || '00:00', //falta agregar en el formulario
-                    observaciones: document.getElementById("statusConcluidoObservacionesModalInventario").value.trim(),
-                    usuario: ""
-                }
+        //console.log(expedienteParaEnviar);
+        const response = await fetch('https://api-nijc7glupa-uc.a.run.app/inventario/inventario', { // Asegúrate de que la ruta sea la correcta
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            numeroFojas: document.getElementById("numeroFojasModalInventario").value.trim(),
-            inmueble: document.getElementById("inmuebleModalInventario").value.trim(),
-            ubicacion: document.getElementById("ubicacionModalInventario").value.trim(),
-            codigoSubserie: document.getElementById("codigoSerieInventario").value.trim(),
-            nombreSerie: document.getElementById("nombreSerieInventario").value.trim(),
-            valorDocumental: document.getElementById("valorDocumentalSerieInventario").value.trim(),
-            aniosTramite: document.getElementById("aniosTramite").value.trim(),
-            aniosConcentracion: document.getElementById("aniosConcentracion").value.trim()
-        };
-
-        // Validar campos obligatorios
-        for (const [key, value] of Object.entries(formData)) {
-            if (!value) {
-                console.error(`Error: El campo "${key}" es obligatorio.`);
-                alert(`El campo "${key}" es obligatorio.`);
-                return;
-            }
-        }
-
-        // Obtener valores de Soporte Documental (Checkboxes)
-        formData.soporteDocumental = [
-            document.getElementById("soportePapelModalInventario").checked ? "Papel" : null,
-            document.getElementById("soporteElectronicoModalInventario").checked ? "Electrónico" : null
-        ].filter(Boolean).join("/");
-
-        if (!formData.soporteDocumental) {
-            alert("Debe seleccionar al menos un tipo de Soporte Documental.");
-            return;
-        }
-
-        // Obtener valores de Tradición Documental (Checkboxes)
-        formData.tradicionDocumental = [
-            document.getElementById("soporteOriginalModalInventario").checked ? "Original" : null,
-            document.getElementById("soporteCopiaModalInventario").checked ? "Copia" : null
-        ].filter(Boolean).join("/");
-
-        if (!formData.tradicionDocumental) {
-            alert("Debe seleccionar al menos un tipo de Tradición Documental.");
-            return;
-        }
-
-        // Obtener valor de Condiciones de Acceso (Radio buttons)
-        formData.condicionesAcceso = document.querySelector('input[name="condicionesAcceso"]:checked')?.value || "";
-
-        // Si es "Reservada", obtener años de reserva
-        formData.aniosReserva = formData.condicionesAcceso === "Reservada"
-            ? document.getElementById("aniosReservaModalInventario").value.trim()
-            : "0";
-        console.log("datos envidiados " + formData);
-        // Enviar solicitud POST 
-        const response = await fetch("https://api-nijc7glupa-uc.a.run.app/inventario/inventarioStatus", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(expedienteParaEnviar)
         });
-
         if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al guardar el expediente.');
         }
-
-        const result = await response.json();
-        console.log("Registro exitoso:", result);
-
+        const resultado = await response.json();
+        //console.log('Expediente guardado con éxito:', resultado);
+        // Aquí puedes cerrar el modal y recargar la tabla principal
         // Mostrar modal de éxito
         new bootstrap.Modal(document.getElementById('successModal')).show();
-
-        // Cerrar modal de inventario
+        // Cerrar modal de dependencias
         bootstrap.Modal.getInstance(document.getElementById('modalInventario'))?.hide();
-
-        //ACTUALIZAR TABLA
-        seccionSeleccionadoInventaerio = document.getElementById("selectSeccionesInventario").value.trim();
-        anioSeleccionadoInventaerio = document.getElementById("selectAnioBusqueda").value.trim(),
-            cargarTablaInventario(anioSeleccionadoInventaerio, seccionSeleccionadoInventaerio);
-        cargarTablaInventarioTurnado(anioSeleccionadoInventaerio, seccionSeleccionadoInventaerio);
-
+        // Refrescar la tabla!
+        actualizarVistasDeInventario();
     } catch (error) {
-        console.error("Error al guardar inventario:", error);
-        alert("Hubo un problema al guardar el inventario. Inténtelo nuevamente.");
+        console.error('Fallo al enviar el formulario:', error);
+        alert(`Error: ${error.message}`);
     }
 }
 
 // Se obtiene el ultimo número del expediente para agregarlo al modal
 async function obtenerUltimoNumeroExpediente() {
+    console.log("Función (obtenerUltimoNumeroExpediente()) OK");
     // Obtener solo las filas principales (ignorando las subtablas colapsables)
     const rows = document.querySelectorAll("#tabla-inventario tr.fila-principal");
     let nuevoNumero;
@@ -1078,21 +1233,14 @@ async function obtenerUltimoNumeroExpediente() {
     //llenarSelectAreaTurnado();
 }
 
-//funcion de llenar areas del modal para el area turnado
-/*
-async function llenarSelectAreaTurnado() {
-    document.getElementById('statusCreadoAreaCreadoModalInventario').innerHTML = (document.getElementById('selectSeccionesInventario').innerHTML);
-}
-*/
 // Función para eliminar un registro del inventario
 async function eliminarRegistroInventario(id, numeroExpediente, asunto) {
+    console.log("Función eliminarRegistroInventario()");
     if (!id) {
         console.error("Error: ID no proporcionado.");
         return;
     }
-
     const url = `https://api-nijc7glupa-uc.a.run.app/inventario/inventario/${id}`;
-
     // Confirmación con SweetAlert2
     const confirmacion = await Swal.fire({
         title: "¿Estás seguro?",
@@ -1114,7 +1262,6 @@ async function eliminarRegistroInventario(id, numeroExpediente, asunto) {
         if (!response.ok) {
             throw new Error(`Error al eliminar: ${response.statusText}`);
         }
-
         // Mostrar alerta de éxito
         await Swal.fire({
             title: "Eliminado",
@@ -1122,14 +1269,8 @@ async function eliminarRegistroInventario(id, numeroExpediente, asunto) {
             icon: "success",
             confirmButtonColor: "#3085d6"
         });
-
-        // Recargar el inventario con los valores actuales del select
-        const selectAnio = document.getElementById("selectAnioBusqueda").value;
-        const selectSecciones = document.getElementById("selectSeccionesInventario").value;
-
-        //cargarTablaInventario(selectAnio, selectSecciones);
-        //cargarTablaInventarioTurnado(selectAnio, selectSecciones);
-
+        //Refrescar la tabla!
+        actualizarVistasDeInventario();
     } catch (error) {
         console.error("Error al eliminar el registro:", error);
         Swal.fire({
@@ -1145,16 +1286,17 @@ async function eliminarRegistroInventario(id, numeroExpediente, asunto) {
 let areasSeleccionadas = [];
 let dependenciasSeleccionadas = [];
 
-function actualizarAreasTurnadasInventarioUI() {
-    const container = document.getElementById("listaAreasTurnadas");
+function actualizarListaAreasTurnadasModalInventario() {
+    console.log("Función (actualizarListaAreasTurnadasModalInventario()) OK");
+    const container = document.getElementById("listaAreasTurnadasModalInventario");
     container.innerHTML = ""; // Limpiar antes de actualizar
-    
+
     // Usamos un DocumentFragment para mejor rendimiento
     const fragmento = document.createDocumentFragment();
 
     areasSeleccionadas.forEach((area, index) => {
         // Llamamos a nuestra nueva función para crear cada <li>
-        const elementoLista = crearElementoListaArea(area, index);
+        const elementoLista = crearElementoListaAreaTurnadasModalInventario(area, index);
         fragmento.appendChild(elementoLista);
     });
 
@@ -1164,35 +1306,50 @@ function actualizarAreasTurnadasInventarioUI() {
     container.className = "list-group";
 }
 
-function actualizarDependenciasUI() {
-    const container = document.getElementById("listaDependencias");
+/**
+ * Actualiza la UI de la lista de dependencias usando el método moderno.
+ */
+function actualizarListaDependenciaModalInventario() {
+    console.log("Función (actualizarListaDependenciaModalInventario()) OK");
+    const container = document.getElementById("listaDependenciasModalInventario");
     container.innerHTML = ""; // Limpiar antes de actualizar
-
+    // Usamos un DocumentFragment para construir la lista fuera del DOM
+    const fragmento = document.createDocumentFragment();
     dependenciasSeleccionadas.forEach((dependencia, index) => {
-        // Aseguramos que el index se pase correctamente
-        container.insertAdjacentHTML("beforeend", crearDependenciaHTML(index, dependencia.nombre));
+        // Llamamos a nuestra nueva función constructora para cada elemento
+        const elementoLista = crearElementoListaDependenciaModalInventario(dependencia, index);
+        fragmento.appendChild(elementoLista);
     });
+
+    // Añadimos la lista completa al DOM de una sola vez
+    container.appendChild(fragmento);
+    // Y le damos el estilo de lista de Bootstrap
+    container.className = "list-group";
 }
 
-function eliminarDependenciaLista(index) {
+function eliminarDependenciaListaModalInventario(index) {
+    console.log("Función (eliminarDependenciaListaModalInventario()) OK");
     if (index === undefined || index === null) {
         console.error("Error: ID no proporcionado");
         return;
     }
     dependenciasSeleccionadas.splice(index, 1);
-    actualizarDependenciasUI();
+    actualizarListaDependenciaModalInventario();
 }
 
-function agregarAreaInventario() {
+function agregarElementoAListaAreasTurnadasModalInventario() {
+    console.log("Función (agregarElementoAListaAreasTurnadasModalInventario()) OK");
     let select = document.getElementById("statusCreadoAreaCreadoModalInventario");
     let areaCodigo = select.value;
     let areaNombre = select.options[select.selectedIndex].text;
     if (areaCodigo && !areasSeleccionadas.some(area => area.codigo === areaCodigo)) {
         areasSeleccionadas.push({ codigo: areaCodigo, nombre: areaNombre });
-        actualizarAreasTurnadasInventarioUI();
+        actualizarListaAreasTurnadasModalInventario();
     }
 }
-function agregarDependencia() {
+
+function agregarElementoAListaDependenciaModalInventario() {
+    console.log("Función (agregarElementoAListaDependenciaModalInventario()) OK");
     let select = document.getElementById("dependenciaModalInventario");
     let dependencia = select.value;
     let dependenciaTexto = select.options[select.selectedIndex].text;
@@ -1200,16 +1357,47 @@ function agregarDependencia() {
     // Verifica si el valor no está vacío y si ya existe en la lista
     if (dependencia && !dependenciasSeleccionadas.some(dep => dep.nombre === dependencia)) {
         dependenciasSeleccionadas.push({ nombre: dependenciaTexto });
-        actualizarDependenciasUI();
+        actualizarListaDependenciaModalInventario();
     }
 }
 
 function eliminarAreaInventario(index) {
+    console.log("Función (eliminarAreaInventario) OK");
     // CORRECCIÓN: Apuntamos al array correcto
     areasSeleccionadas.splice(index, 1);
-    
+
     // Volvemos a dibujar la lista actualizada
-    actualizarAreasTurnadasInventarioUI();
+    actualizarListaAreasTurnadasModalInventario();
+}
+
+/**
+ * Crea un elemento <li> para la lista de dependencias seleccionadas.
+ * Asigna el evento de clic para el botón de eliminar de forma segura.
+ * @param {object} dependencia - El objeto de la dependencia con {nombre}.
+ * @param {number} index - El índice de la dependencia en el array.
+ * @returns {HTMLLIElement} El elemento <li> construido.
+ */
+function crearElementoListaDependenciaModalInventario(dependencia, index) {
+    console.log("Función (crearElementoListaDependenciaModalInventario()) OK");
+    // Creamos el elemento de la lista
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+    // Añadimos el nombre de la dependencia y el botón de eliminar
+    li.innerHTML = `
+        <span>${dependencia.nombre}</span>
+        <button type="button" class="btn btn-danger btn-sm" title="Eliminar Dependencia">
+            <i class="bi bi-trash"></i>
+        </button>
+    `;
+
+    // Asignamos el evento de clic al botón que acabamos de crear
+    const btnEliminar = li.querySelector("button");
+    btnEliminar.addEventListener("click", () => {
+        eliminarDependenciaListaModalInventario(index); // Llama a tu función original
+    });
+
+    return li;
 }
 
 /**
@@ -1219,11 +1407,12 @@ function eliminarAreaInventario(index) {
  * @param {number} index - El índice del área en el array.
  * @returns {HTMLLIElement} El elemento <li> construido.
  */
-function crearElementoListaArea(area, index) {
+function crearElementoListaAreaTurnadasModalInventario(area, index) {
+    console.log("Función (crearElementoListaAreaTurnadasModalInventario()) OK");
     // Creamos el elemento de la lista
     const li = document.createElement("li");
     li.className = "list-group-item d-flex justify-content-between align-items-center";
-    
+
     // Añadimos el nombre del área y el botón de eliminar
     li.innerHTML = `
         <span>${area.nombre}</span>
@@ -1241,45 +1430,26 @@ function crearElementoListaArea(area, index) {
     return li;
 }
 
-
-
-function crearDependenciaHTML(index, dependencia) {
-    return `
-      <li class="area-item border p-2 mb-2 rounded list-group-item d-flex justify-content-between align-items-center">
-    <span>${dependencia}</span>
-
-    <button type="button" class="btn btn-danger btn-sm" 
-            onclick="eliminarDependenciaLista(${index})">
-        <i class="bi bi-trash"></i>
-    </button> 
-</li>
-    `;
-}
-
-
-function limpiarUIAreasModal() {
+function limpiarListaAreasTurnadasModalInventario() {
+    console.log("Función (limpiarListaAreasTurnadasModalInventario()) OK");
     // Limpiar la lista de áreas seleccionadas
     areasSeleccionadas = [];
-    actualizarAreasTurnadasInventarioUI();
-
+    actualizarListaAreasTurnadasModalInventario();
     // Restablecer el valor del select
     document.getElementById("statusCreadoAreaCreadoModalInventario").value = "";
 }
 
-function limpiarUIDependencias() {
+function limpiarListaDependenciaModalInventario() {
+    console.log("Función (limpiarListaDependenciaModalInventario()) OK");
     // Limpiar la lista de áreas seleccionadas
     dependenciasSeleccionadas = [];
-    actualizarDependenciasUI();
-
+    actualizarListaDependenciaModalInventario();
     // Restablecer el valor del select
     //document.getElementById("dependenciaModalInventario").value = "";
 }
 
-document.getElementById("btnAgregarAreaInventario").addEventListener("click", agregarAreaInventario);
-document.getElementById("btnAgregarDependencias").addEventListener("click", agregarDependencia);
-
-
 function deshabilitarCamposStatus() {
+    console.log("Función (deshabilitarCamposStatus())");
     document.getElementById("statusTramiteFechaModalInventario").disabled = true;
     document.getElementById("statusTramiteObservacionesModalInventario").disabled = true;
     document.getElementById("statusConcluidoFechaModalInventario").disabled = true;
@@ -1287,6 +1457,7 @@ function deshabilitarCamposStatus() {
 }
 
 function habilitarCamposStatus() {
+    console.log("Función (habilitarCamposStatus())");
     document.getElementById("statusTramiteFechaModalInventario").disabled = false;
     document.getElementById("statusTramiteObservacionesModalInventario").disabled = false;
     document.getElementById("statusConcluidoFechaModalInventario").disabled = false;
@@ -1340,9 +1511,9 @@ document.getElementById("selectStatusInventario").addEventListener("change", fun
     });
 });
 
-
 //metodo sub de soporte documental para editar al obtener el get por id
 function marcarSoportes(soporteDocumental) {
+    console.log("Función (marcarSoportes())");
     if (!soporteDocumental) return;
 
     // Convertir la cadena en un array separándola por "/"

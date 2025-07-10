@@ -1,9 +1,10 @@
 $(document).ready(function () {
   $('#dependenciaModalInventario').selectpicker(); // Inicializa Bootstrap Select
-  cargarSelectModalInventario(); // Luego carga datos
+  cargarSelectDependenciasModalInventario(); // Luego carga datos
 });
-async function cargarSelectModalInventario() {
+async function cargarSelectDependenciasModalInventario() {
   try {
+    console.log("Función (cargarSelectDependenciasModalInventario() OK)");
     const response = await fetch("https://api-nijc7glupa-uc.a.run.app/dependencias/dependencias");
     const data = await response.json();
 

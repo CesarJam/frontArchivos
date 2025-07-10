@@ -373,55 +373,57 @@
                 </div>
                 <div>
                   <div class="container">
-    <div class="card">
-        <div class="card-body">
-            <div class="row gy-3">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="row gy-3">
 
-                <div class="col-12 col-md-4">
-                    <div class="mb-3">
-                        <label for="selectSeccionesInventario" class="form-label fw-bold">Selecciona una Sección:</label>
-                        <select class="form-select" id="selectSeccionesInventario">
-                            <option selected disabled>-- Cargando opciones --</option>
-                        </select>
-                    </div>
+                          <div class="col-12 col-md-4">
+                            <div class="mb-3">
+                              <label for="selectSeccionesInventario" class="form-label fw-bold">Selecciona una
+                                Sección:</label>
+                              <select class="form-select" id="selectSeccionesInventario">
+                                <option selected disabled>-- Cargando opciones --</option>
+                              </select>
+                            </div>
 
-                    <div class="mb-3">
-                        <label for="selectAnioBusqueda" class="form-label fw-bold">Selecciona el Año:</label>
-                        <select class="form-select" id="selectAnioBusqueda">
-                            <option selected disabled>-- Cargando opciones --</option>
-                        </select>
-                    </div>
+                            <div class="mb-3">
+                              <label for="selectAnioBusqueda" class="form-label fw-bold">Selecciona el Año:</label>
+                              <select class="form-select" id="selectAnioBusqueda">
+                                <option selected disabled>-- Cargando opciones --</option>
+                              </select>
+                            </div>
 
-                    
-                </div>
 
-                <div class="col-12 col-md-8">
-                    <div class="mb-3">
-                        <label for="seccionObtenidaInventario" class="form-label fw-bold">Sección:</label>
-                        <input type="text" class="form-control" id="seccionObtenidaInventario" disabled>
+                          </div>
+
+                          <div class="col-12 col-md-8">
+                            <div class="mb-3">
+                              <label for="seccionObtenidaInventario" class="form-label fw-bold">Sección:</label>
+                              <input type="text" class="form-control" id="seccionObtenidaInventario" disabled>
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="selectStatusInventario" class="form-label fw-bold">Status:</label>
+                              <select class="form-select" id="selectStatusInventario">
+                                <option selected value="Todos">Todos</option>
+                                <option value="registro">Recepcionado</option>
+                                <option value="tramite">En Trámite</option>
+                                <option value="concluido">Concluido</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-12 d-flex justify-content-md-end">
+                            <div class="mb-3">
+                              <button id="btnRegistrarInventario" type="button" class="btn btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#modalInventario">
+                                Registrar nuevo
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="selectStatusInventario" class="form-label fw-bold">Status:</label>
-                        <select class="form-select" id="selectStatusInventario">
-                            <option selected value="Todos">Todos</option>
-                            <option value="registro">Recepcionado</option>
-                            <option value="tramite">En Trámite</option>
-                            <option value="concluido">Concluido</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-12 d-flex justify-content-md-end">
-                  <div class="mb-3">
-                        <button id="btnRegistrarInventario" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalInventario">
-                            Registrar nuevo
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                  </div>
                 </div>
                 <hr>
                 <div>
@@ -730,242 +732,178 @@
   </div>
 
   <!--Modal Inventario-->
-  <div class="modal fade" id="modalInventario" tabindex="-1">
+  <!---->
+<div class="modal fade" id="modalInventario" tabindex="-1" aria-labelledby="modalRegistroInventario" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalRegistroInventario">Registrar Expediente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRegistroInventario">Registrar Expediente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formularioInventario" novalidate>
+                    <input type="hidden" id="idInventario">
+                    <input type="hidden" id="areaCreadoModalInventario">
+
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">Datos de Identificación</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="numeroExpedienteModalInventario" class="form-label fw-bold">Número de Expediente</label>
+                            <input type="text" class="form-control" id="numeroExpedienteModalInventario" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="asuntoModalInventario" class="form-label fw-bold">Asunto</label>
+                            <input type="text" class="form-control" id="asuntoModalInventario" required>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold border-bottom pb-2 mt-4 mb-3">Dependencias Involucradas</h6>
+                    <div class="input-group">
+                        <select class="selectpicker form-control" data-live-search="true" data-style="btn-light" id="dependenciaModalInventario" name="dependencias" data-size="5" title="Selecciona y añade una dependencia"></select>
+                        <button type="button" class="btn btn-secondary" id="btnAgregarDependenciasModalInventario">
+                            <i class="bi bi-plus-circle"></i> Agregar
+                        </button>
+                    </div>
+                    <p class="form-text mt-2">Dependencias seleccionadas:</p>
+                    <ul id="listaDependenciasModalInventario" class="list-group"></ul>
+
+                    <h6 class="fw-bold border-bottom pb-2 mt-4 mb-3">Metadatos del Expediente</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="numeroFojasModalInventario" class="form-label fw-bold">Número de Fojas</label>
+                            <input type="number" class="form-control" id="numeroFojasModalInventario" required min="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="caracterComunicacionModal" class="form-label fw-bold">Carácter</label>
+                            <select class="form-select" id="caracterComunicacionModal">
+                                <option value="No aplica" selected>No aplica</option>
+                                <option value="Enviado">Enviado</option>
+                                <option value="Recibido">Recibido</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                             <label class="form-label fw-bold">Soporte Documental</label>
+                             <div class="form-check"><input class="form-check-input" type="checkbox" id="soportePapelModalInventario" value="Papel"><label class="form-check-label" for="soportePapelModalInventario">Papel</label></div>
+                             <div class="form-check"><input class="form-check-input" type="checkbox" id="soporteElectronicoModalInventario" value="Electrónico"><label class="form-check-label" for="soporteElectronicoModalInventario">Electrónico</label></div>
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label fw-bold">Tradición Documental</label>
+                             <div class="d-flex">
+                                <div class="form-check me-3"><input class="form-check-input" type="radio" name="tradicionDocumental" id="tradicionDocumentalOriginalModalInventario" value="Original" checked><label class="form-check-label" for="tradicionDocumentalOriginalModalInventario">Original</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="tradicionDocumental" id="tradicionDocumentalCopiaModalInventario" value="Copia"><label class="form-check-label" for="tradicionDocumentalCopiaModalInventario">Copia</label></div>
+                             </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Condiciones de Acceso</label>
+                            <div class="d-flex flex-wrap">
+                                <div class="form-check me-3"><input class="form-check-input" type="radio" name="condicionesAcceso" id="condicionPublicaModalInventario" value="Pública"><label class="form-check-label" for="condicionPublicaModalInventario">Pública</label></div>
+                                <div class="form-check me-3"><input class="form-check-input" type="radio" name="condicionesAcceso" id="condicionReservadaModalInventario" value="Reservada"><label class="form-check-label" for="condicionReservadaModalInventario">Reservada</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="condicionesAcceso" id="condicionConfidencialModalInventario" value="Confidencial"><label class="form-check-label" for="condicionConfidencialModalInventario">Confidencial</label></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="campoAniosReservaModalInventario" style="display: none;">
+                            <label class="form-label fw-bold" for="aniosReservaModalInventario">Años de Reserva:</label>
+                            <input type="number" class="form-control" id="aniosReservaModalInventario" min="0" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inmuebleModalInventario" class="form-label fw-bold">Inmueble</label>
+                            <input type="text" class="form-control" id="inmuebleModalInventario" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="ubicacionModalInventario" class="form-label fw-bold">Ubicación (URL)</label>
+                            <input type="url" class="form-control" id="ubicacionModalInventario" placeholder="https://..." required>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold border-bottom pb-2 mt-4 mb-3">Clasificación Archivística</h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="selectSeriesSubseries" class="form-label fw-bold">Subserie Documental:</label>
+                            <select class="form-select" id="selectSeriesSubseries">
+                                <option selected disabled>-- Cargando opciones --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><label class="form-label">Código de Serie</label><input type="text" class="form-control" id="codigoSerieModalInventario" readonly></div>
+                        <div class="col-md-6"><label class="form-label">Nombre Serie</label><input type="text" class="form-control" id="nombreSerieModalInventario" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Valor Documental</label><input type="text" class="form-control" id="valorDocumentalSerieModalInventario" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Años Trámite</label><input type="number" class="form-control" id="aniosTramiteModalInventario" readonly></div>
+                        <div class="col-md-4"><label class="form-label">Años Concentración</label><input type="number" class="form-control" id="aniosConcentracionModalInventario" readonly></div>
+                    </div>
+                    
+                    <h6 class="fw-bold border-bottom pb-2 mt-4 mb-3">Datos del Registro Inicial</h6>
+                    <div class="row g-3">
+                         <div class="col-md-6">
+                            <label for="statusCreadoFechaModalInventario" class="form-label fw-bold">Fecha de Registro</label>
+                            <input type="date" class="form-control" id="statusCreadoFechaModalInventario" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="statusCreadoHoraModalInventario" class="form-label fw-bold">Hora de Registro</label>
+                            <input type="time" class="form-control" id="statusCreadoHoraModalInventario" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="statusCreadoAreaCreadoModalInventario" class="form-label fw-bold">Turnar a (Áreas Destino):</label>
+                            <div class="input-group">
+                                <select class="form-select" id="statusCreadoAreaCreadoModalInventario"></select>
+                                <button class="btn btn-secondary" type="button" id="btnAgregarAreaModalInventario">
+                                    <i class="bi bi-plus-circle"></i> Agregar
+                                </button>
+                            </div>
+                            <p class="form-text mt-2">Áreas Seleccionadas:</p>
+                            <ul id="listaAreasTurnadasModalInventario" class="list-group"></ul>
+                        </div>
+                        <div class="col-12">
+                            <label for="statusCreadoObservacionesModalInventario" class="form-label fw-bold">Observaciones</label>
+                            <textarea class="form-control" id="statusCreadoObservacionesModalInventario" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="guardarBtnModalinventario">Guardar</button>
+                <button type="button" class="btn btn-primary d-none" id="modificarBtnModalInventario">Modificar</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <form id="formularioInventario">
-            <!--id usado para editar-->
-            <input type="text" class="form-control" id="idInventario" hidden>
-            <input type="text" class="form-control" id="areaCreadoModalInventario" hidden>
-
-            <!-- Número de Expediente (Generado Automáticamente) -->
-            <div class="mb-3">
-              <label for="numeroExpedienteModalInventario" class="form-label">Número de Expediente</label>
-              <input type="text" class="form-control" id="numeroExpedienteModalInventario">
-            </div>
-
-            <!-- Asunto -->
-            <div class="mb-3">
-              <label for="asuntoModalInventario" class="form-label">Asunto</label>
-              <input type="text" class="form-control" id="asuntoModalInventario" required>
-            </div>
-            <!--Dependencias-->
-            <div class="mb-3">
-              <select class="selectpicker form-control" data-live-search="true" data-style="btn-primary"
-                    id="dependenciaModalInventario" name="dependencias" data-size="5">
-                  </select>
-                  <button type="button" class="btn btn-success mt-2" id="btnAgregarDependencias">
-                  <i class="bi bi-plus-circle"></i> Agregar!!!
-                </button>
-                <h5 class="mt-3">Lista de dependencias</h5>
-              <ul id="listaDependencias"></ul>
-            </div>
-
-
-            <!-- Tipo -->
-            <div class="mb-3">
-
-            </div>
-            <hr>
-            <!--AQUI VAMOS A AGREGAR LOS ESTATUS-->
-            <div class="mb-3">
-              <h5>Registro</h5>
-              <div class="mb-3">
-                <!--Tipo de registro-->
-                <label for="tipoModalInventario" class="form-label">Tipo</label>
-                <select class="form-select" id="tipoModalInventario" required>
-                  <option value="Recibido">No aplica</option>
-                  <option value="Enviado">Enviado</option>
-                  <option value="Recibido">Recibido</option>
-                </select>
-                <!--Fecha de registro-->
-                <label for="statusCreadoFechaModalInventario" class="form-label">Fecha de registro</label>
-                <input type="date" class="form-control" id="statusCreadoFechaModalInventario">
-                <!--Hora Creada-->
-                <label for="statusCreadoHoraModalInventario" class="form-label">Hora de registro</label>
-                <input type="time" class="form-control" id="statusCreadoHoraModalInventario">
-                <!--Area a la que se turna-->
-                <label for="statusCreadoAreaCreadoModalInventario" class="form-label">Área a la que se Turna</label>
-                <select class="form-select" id="statusCreadoAreaCreadoModalInventario">
-                </select>
-                <button type="button" class="btn btn-primary mt-2" id="btnAgregarAreaInventario">
-                  <i class="bi bi-plus-circle"></i> Agregar
-                </button>
-                <h5 class="mt-3">Áreas Seleccionadas:</h5>
-                <ul id="listaAreasTurnadas"></ul>
-              </div> <!-- Se cierra correctamente el div interno -->
-              <br>
-              <!--Observaciones de registro-->
-              <label for="statusCreadoObservacionesModalInventario" class="form-label">Observaciones</label>
-              <input type="text" class="form-control" id="statusCreadoObservacionesModalInventario">
-            </div>
-            <hr>
-            <!--Status en trámite-->
-            <div class="mb-3">
-              <h5>En trámite</h5>
-              <!--Fecha Tramite-->
-              <label for="statusTramiteFechaModalInventario" class="form-label">Fecha de trámite</label>
-              <input type="date" class="form-control" id="statusTramiteFechaModalInventario">
-              <!--Hora Tramite-->
-              <label for="statusTramiteHoraModalInventario" class="form-label">Hora de registro</label>
-              <input type="time" class="form-control" id="statusTramiteHoraModalInventario">
-              <!--Observaciones tramite-->
-              <label for="statusTramiteObservacionesModalInventario" class="form-label">Observaciones de documento
-                trámite</label>
-              <input type="text" class="form-control" id="statusTramiteObservacionesModalInventario">
-            </div>
-            <hr>
-            <!--Status en concluido-->
-            <div class="mb-3">
-              <h5>Concluido</h5>
-              <!--Fecha Concluido-->
-              <label for="statusConcluidoFechaModalInventario" class="form-label">Fecha de Concluido</label>
-              <input type="date" class="form-control" id="statusConcluidoFechaModalInventario">
-              <!--Hora Concluido-->
-              <label for="statusConcluidoHoraModalInventario" class="form-label">Hora de registro</label>
-              <input type="time" class="form-control" id="statusConcluidoHoraModalInventario">
-              <!--Observaciones Concluido-->
-              <label for="statusConcluidoObservacionesModalInventario" class="form-label">Observaciones de documento
-                concluido</label>
-              <input type="text" class="form-control" id="statusConcluidoObservacionesModalInventario">
-            </div>
-            <hr>
-            <!-- Número de Fojas -->
-            <div class="mb-3">
-              <label for="numeroFojasModalInventario" class="form-label">Número de Fojas</label>
-              <input type="number" class="form-control" id="numeroFojasModalInventario" required>
-            </div>
-            <!-- Soporte Documental -->
-            <div class="mb-3">
-              <label class="form-label">Soporte documental</label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="soportePapelModalInventario" value="Papel">
-                <label class="form-check-label" for="soportePapelModalInventario">Papel</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="soporteElectronicoModalInventario"
-                  value="Electrónico">
-                <label class="form-check-label" for="soporteElectronicoModalInventario">Electrónico</label>
-              </div>
-            </div>
-            <!-- Condiciones de Acceso -->
-            <div class="mb-3">
-              <label class="form-label">Condiciones de acceso</label>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="condicionesAcceso"
-                  id="condicionPublicaModalInventario" value="Pública" onclick="toggleAniosReserva()">
-                <label class="form-check-label" for="condicionPublicaModalInventario">Pública</label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="condicionesAcceso"
-                  id="condicionReservadaModalInventario" value="Reservada" onclick="toggleAniosReserva()">
-                <label class="form-check-label" for="condicionReservadaModalInventario">Reservada</label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="condicionesAcceso"
-                  id="condicionConfidencialModalInventario" value="Confidencial" onclick="toggleAniosReserva()">
-                <label class="form-check-label" for="condicionConfidencialModalInventario">Confidencial</label>
-              </div>
-
-              <!-- Campo Años Reserva (Oculto por defecto) -->
-              <div class="mt-2" id="campoAniosReservaModalInventario">
-                <label class="form-label" for="aniosReservaModalInventario">Años de Reserva:</label>
-                <input type="number" class="form-control" id="aniosReservaModalInventario" min="0" value="0"
-                  style="display: none;">
-              </div>
-            </div>
-            <!-- Tradición Documental -->
-            <div class="mb-3">
-              <label class="form-label">Tradición documental</label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="soporteOriginalModalInventario" value="Original">
-                <label class="form-check-label" for="soporteOriginalModalInventario">Original</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="soporteCopiaModalInventario" value="Copia">
-                <label class="form-check-label" for="soporteCopiaModalInventario">Copia</label>
-              </div>
-            </div>
-            <!-- Fechas de Apertura y Cierre -->
-            <!--
-            <div class="row">
-              <div class="col-md-6">
-                <label for="fechaApertura" class="form-label">Fecha de Apertura</label>
-                <input type="date" class="form-control" id="fechaApertura" required>
-              </div>
-              <div class="col-md-6">
-                <label for="fechaCierre" class="form-label">Fecha de Cierre</label>
-                <input type="date" class="form-control" id="fechaCierre">
-              </div>
-            </div>
-            -->
-
-
-            <!-- Inmueble -->
-            <div class="mb-3">
-              <label for="inmuebleModalInventario" class="form-label">Inmueble</label>
-              <input type="text" class="form-control" id="inmuebleModalInventario" required>
-            </div>
-            <!-- Ubicación -->
-            <div class="mb-3">
-              <label for="ubicacionModalInventario" class="form-label">Ubicación</label>
-              <input type="url" class="form-control" id="ubicacionModalInventario" required>
-            </div>
-
-            <!--Dropdown de las series-->
-            <div class="mb-3">
-
-              <label for="selectSeriesSubseries">Selecciona una subserie:</label>
-              <select class="form-select" id="selectSeriesSubseries">
-                <option selected disabled>-- Cargando opciones --</option>
-              </select>
-            </div>
-            <!-- Código de Serie -->
-            <div class="mb-3">
-              <label for="codigoSerieInventario" class="form-label">Código de Serie</label>
-              <input type="text" class="form-control" id="codigoSerieInventario" readonly>
-            </div>
-            <!--Nombre Serie-->
-            <div class="mb-3">
-              <label for="nombreSerieInventario" class="form-label">Nombre Serie</label>
-              <input type="text" class="form-control" id="nombreSerieInventario" required readonly>
-            </div>
-            <!--Valor documental-->
-            <div class="mb-3">
-              <label for="valorDocumentalSerieInventario" class="form-label">Valor Documental</label>
-              <input type="text" class="form-control" id="valorDocumentalSerieInventario" required readonly>
-            </div>
-            <!-- Años de Trámite y Concentración -->
-            <div class="row">
-              <div class="col-md-6">
-                <label for="aniosTramite" class="form-label">Años de Trámite</label>
-                <input type="number" class="form-control" id="aniosTramite" readonly>
-              </div>
-              <div class="col-md-6">
-                <label for="aniosConcentracion" class="form-label">Años de Concentración</label>
-                <input type="number" class="form-control" id="aniosConcentracion" readonly>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <!-- Botones del Modal -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="modificarBtnModalInventario"
-            onclick="modificarInventario()">Modificar</button>
-          <button type="button" class="btn btn-primary" id="guardarBtnModalinventario"
-            onclick="guardarInventario()">Guardar</button>
-        </div>
-      </div>
     </div>
+</div>
+  <!--Moda Nuevo Movimiento-->
+  <div class="modal fade" id="modalNuevoMovimiento" tabindex="-1" aria-labelledby="modalMovimientoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered"> <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalMovimientoLabel">Añadir Movimiento</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="formNuevoMovimiento">
+                      <input type="hidden" id="movimientoExpedienteId">
+                      <input type="hidden" id="movimientoTipo">
+                      <div class="mb-3">
+                          <label for="selectSeriesSubseries" class="form-label fw-bold">Tipo:</label>
+                          <select class="form-select" id="selectSeriesSubseries">
+                              <option selected disabled>-- Cargando opciones --</option>
+                          </select>
+                      </div>
+                      <div class="mb-3">
+                          <label for="movimientoFecha" class="form-label fw-bold">Fecha del Movimiento</label>
+                          <input type="date" class="form-control" id="movimientoFecha" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="movimientoHora" class="form-label fw-bold">Hora del Movimiento</label>
+                          <input type="time" class="form-control" id="movimientoHora" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="movimientoObservaciones" class="form-label fw-bold">Observaciones</label>
+                          <textarea class="form-control" id="movimientoObservaciones" rows="3" required></textarea>
+                      </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-primary" id="btnGuardarMovimiento">Guardar Movimiento</button>
+              </div>
+          </div>
+      </div>
   </div>
 
   <!--Modal Dependencias-->
