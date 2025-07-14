@@ -56,6 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
         btnAgregarArea.addEventListener("click", agregarElementoAListaAreasTurnadasModalInventario);
     }
 
+    // Asignación de evento para el botón de agregarNuevoMovimiento - Usamos el nuevo ID del botón de guardar del modal
+    const btnGuardarMovimiento = document.getElementById('btnGuardarMovimientoModalNuevoMovimiento');
+    if (btnGuardarMovimiento) {
+        btnGuardarMovimiento.addEventListener('click', guardarNuevoMovimiento);
+    }
+
     // Asignación de evento para el botón de Agregar Dependencias dentro del ModalInventario
     const btnAgregarDependencia = document.getElementById("btnAgregarDependenciasModalInventario");
     if (btnAgregarDependencia) {
@@ -248,8 +254,8 @@ function crearFilaPrincipalInventario(item, tipoUltimoMovimiento) {
             <button class="btn btn-warning btn-sm btn-editar" title="Editar Registro">
                 <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-info btn-sm btn-NuevoMovimiento" title="NuevoMovimiento">
-                <i class="bi bi-pencil"></i>
+            <button class="btn btn-primary btn-sm btn-NuevoMovimiento" title="NuevoMovimiento">
+                <i class="bi bi-plus-lg"></i>
             </button>
             <button class="btn btn-danger btn-sm btn-eliminar" title="Eliminar Registro">
                 <i class="bi bi-trash"></i>
@@ -427,6 +433,7 @@ function crearFilaDetalleInventario(item, historial) {
 
 /* Pestaña de turnados */
 async function cargarTablaInventarioTurnado(anio, codigoSeccion) {
+    console.log("Función (cargarTablaInventarioTurnado()) OK");
     const tbody = document.getElementById("tabla-inventarioTurnado");
     const url = `https://api-nijc7glupa-uc.a.run.app/inventario/consultaTurnados/anio/${anio}/areaDestino/${codigoSeccion}`;
 
@@ -467,9 +474,9 @@ async function cargarTablaInventarioTurnado(anio, codigoSeccion) {
 
         datos.forEach((item) => {
             const historial = item.historialMovimientos ?? [];
-            const tipoUltimoMovimiento = historial.at(-1)?.tipo ?? "";
+            //const tipoUltimoMovimiento = historial.at(-1)?.tipo ?? "";
 
-            const filaPrincipal = crearFilaPrincipalTurnado(item, tipoUltimoMovimiento);
+            const filaPrincipal = crearFilaPrincipalTurnado(item);
             const filaDetalle = crearFilaDetalleTurnado(item, historial);
 
             filaPrincipal.addEventListener("click", () => {
@@ -508,53 +515,41 @@ async function cargarTablaInventarioTurnado(anio, codigoSeccion) {
     }
 }
 // Se eliminó el parámetro 'index' que no se utilizaba.
-function crearFilaPrincipalTurnado(item, tipoUltimoMovimiento) {
+function crearFilaPrincipalTurnado(item) {
+    console.log("Función (crearFilaPrincipalTurnado()) OK");
     const fila = document.createElement("tr");
     let filaClase = "fila-principal-inventario"; // Clase unificada para estilos consistentes
-
-    if (tipoUltimoMovimiento === "concluido") filaClase += " table-success";
-    else if (tipoUltimoMovimiento === "tramite") filaClase += " table-warning";
+    if (item.statusActual === 'concluido') {
+        filaClase += " table-success";
+    } else if (item.statusActual === 'tramite') {
+        filaClase += " table-warning";
+    }
 
     fila.className = filaClase;
-    // Se eliminaron los 'onclick' de los botones.
+
     fila.innerHTML = `
-        <td>${item.numeroExpediente}</td>
-        <td colspan="2"><span class="toggle-icon-inventario">▶</span> ${item.asunto} - ${item.listaDeDependencias} - (${item.subserie.codigoSubserie} - ${item.subserie.nombreSubserie})</td>
-        <td class="status">${tipoUltimoMovimiento}</td>
-        <td>
-            <button class="btn btn-warning btn-sm btn-editar" title="Editar Registro">
-                <i class="bi bi-pencil"></i>
+        <td data-label="No Expediente">${item.numeroExpediente}</td>
+        <td data-label="Asunto"><span class="toggle-icon-inventario">▶</span> ${item.asunto} - ${item.listaDeDependencias} - (${item.subserie.codigoSubserie} - ${item.subserie.nombreSubserie})</td>
+        <td data-label="Status">${item.statusActual}</td>
+        <td data-label="Acción">
+            <button class="btn btn-primary btn-sm btn-anadir-movimiento" title="Añadir nuevo movimiento">
+                <i class="bi bi-plus-lg"></i>
             </button>
         </td>
-        <td>
-            <button class="btn btn-danger btn-sm btn-eliminar" title="Eliminar Registro">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
+
     `;
 
-    // --- MEJORA: Manejo de eventos con addEventListener ---
-    const btnEditar = fila.querySelector(".btn-editar");
-    btnEditar.dataset.id = item.id;
-    btnEditar.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que el clic se propague a la fila
-        //editarRegistroInventario(e.currentTarget.dataset.id);
-    });
-
-    const btnEliminar = fila.querySelector(".btn-eliminar");
-    btnEliminar.dataset.id = item.id;
-    btnEliminar.dataset.expediente = item.numeroExpediente;
-    btnEliminar.dataset.asunto = item.asunto;
-    btnEliminar.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que el clic se propague a la fila
-        const data = e.currentTarget.dataset;
-        eliminarRegistroInventario(data.id, data.expediente, data.asunto);
+    // Asignamos el evento al botón que acabamos de crear
+    fila.querySelector('.btn-anadir-movimiento').addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que se active el click de la fila
+        prepararModalParaMovimiento(item.id);
     });
 
     return fila;
 }
 
 function crearFilaDetalleTurnado(item, historial) {
+    console.log("Función (crearFilaDetalleTurnado()) OK");
     const fila = document.createElement("tr");
     fila.classList.add("fila-detalle-inventario");
 
@@ -769,7 +764,7 @@ async function modificarInventario() {
     console.log(expedienteId);
     // 2. Recolectamos TODOS los datos del formulario (esta lógica es idéntica a la de guardar)
     console.log("Recolectando datos para modificar...");
-    
+
     // --- Datos de Identificación ---
     const numeroExpediente = document.getElementById('numeroExpedienteModalInventario').value;
     const asunto = document.getElementById('asuntoModalInventario').value;
@@ -819,7 +814,7 @@ async function modificarInventario() {
     const hora = document.getElementById('statusCreadoHoraModalInventario').value;
     const observaciones = document.getElementById('statusCreadoObservacionesModalInventario').value;
     const usuario = "usuario.logueado"; // Aquí deberías obtener el usuario real
-    
+
     // --- Ensamblamos el Objeto JSON para la actualización ---
     // NOTA: Para un PATCH, podrías enviar solo los campos que cambiaron,
     // pero enviar el objeto completo es más simple desde el formulario y también funciona.
@@ -869,11 +864,11 @@ async function modificarInventario() {
         //console.log('Expediente modificado con éxito:', resultado);
         // Mostrar modal de éxito
         new bootstrap.Modal(document.getElementById('successModal')).show();
-        
+
         // 4. Cerramos el modal y refrescamos la tabla principal
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalInventario'));
         modal.hide();
-        
+
         actualizarVistasDeInventario(); // La función que creamos para recargar los datos
         //alert('Expediente modificado con éxito.');
 
@@ -893,6 +888,7 @@ async function modificarInventario() {
  * @param {string} tipoDeMovimiento - El tipo de movimiento ("tramite" o "concluido").
  */
 function prepararModalParaMovimiento(expedienteId, tipoDeMovimiento) {
+    console.log("Función (prepararModalParaMovimiento()) OK");
     // Obtenemos el modal de Bootstrap
     const modalEl = document.getElementById('modalNuevoMovimiento');
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -902,20 +898,77 @@ function prepararModalParaMovimiento(expedienteId, tipoDeMovimiento) {
 
     // Configuramos los valores ocultos
     document.getElementById('movimientoExpedienteId').value = expedienteId;
-    document.getElementById('movimientoTipo').value = tipoDeMovimiento;
 
     // Cambiamos el título del modal dinámicamente
     const modalTitle = document.getElementById('modalMovimientoLabel');
+    //obtenemos el codigo seccion del selector principal de la página
+    const codigoDelArea = document.getElementById('selectSeccionesInventario').value;
+    // Usamos el nuevo ID para asignar el valor al input deshabilitado
+    document.getElementById('movimientoAreaCanalizadoModalNuevoMovimiento').value = codigoDelArea;
+
     if (tipoDeMovimiento === 'tramite') {
         modalTitle.textContent = 'Registrar Trámite';
     } else if (tipoDeMovimiento === 'concluido') {
         modalTitle.textContent = 'Concluir Expediente';
     }
-
     // Mostramos el modal
     modal.show();
 }
 
+
+/**
+ * Recolecta los datos del modal de movimiento y los envía a la API,
+ * usando los IDs actualizados.
+ */
+async function guardarNuevoMovimiento() {
+    console.log("Función (guardarNuevoMovimiento()) OK");
+    // Obtenemos los datos del formulario usando los nuevos IDs
+    const expedienteId = document.getElementById('movimientoExpedienteId').value;
+    const tipo = document.getElementById('movimientoTipoSelectModalNuevoMovimiento').value;
+    const areaCanalizado = document.getElementById('movimientoAreaCanalizadoModalNuevoMovimiento').value;
+    const fecha = document.getElementById('movimientoFechaModalNuevoMovimiento').value;
+    const hora = document.getElementById('movimientoHoraModalNuevoMovimiento').value;
+    const observaciones = document.getElementById('movimientoObservacionesModalNuevoMovimiento').value;
+    const usuario = "usuario.logueado"; // Reemplazar con el usuario real
+
+    const nuevoMovimiento = {
+        tipo,
+        areaCanalizado,
+        fecha,
+        hora,
+        observaciones,
+        usuario
+    };
+
+    // La lógica de envío a la API (fetch con PATCH) se mantiene igual
+    try {
+        console.log(nuevoMovimiento);
+        const response = await fetch(`https://api-nijc7glupa-uc.a.run.app/inventario/inventarioMovimientos/${expedienteId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevoMovimiento)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al guardar el movimiento.');
+        }
+
+        const resultado = await response.json();
+        console.log('Movimiento guardado con éxito:', resultado);
+        // Mostrar modal de éxito
+        new bootstrap.Modal(document.getElementById('successModal')).show();
+        // 4. Cerramos el modal y refrescamos la tabla principal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoMovimiento'));
+        modal.hide();
+        actualizarVistasDeInventario();
+        //alert('Movimiento registrado con éxito.');
+        
+    } catch (error) {
+        console.error('Fallo al guardar el movimiento:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
 
 
 // Deshabilitar/habilitar campo de años de reserva

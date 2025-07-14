@@ -334,3 +334,12 @@
   box-shadow: var(--bs-box-shadow); 
 }
 
+/*
+ * Restaura los estilos redondeados para los selectores estándar de Bootstrap,
+ * ignorando los que son manejados por la librería 'selectpicker'.
+ * Creado el 11 de julio de 2025, en Chilpancingo.
+ */
+select.form-select:not(.selectpicker) {
+    /* Re-aplicamos el radio de borde estándar de Bootstrap */
+    border-radius: var(--bs-border-radius) !important;
+}
